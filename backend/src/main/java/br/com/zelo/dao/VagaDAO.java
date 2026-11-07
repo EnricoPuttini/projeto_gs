@@ -7,7 +7,9 @@ import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 import org.springframework.stereotype.Repository;
 
+import java.util.EnumMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 
 @Repository
@@ -61,4 +63,11 @@ public class VagaDAO extends BaseDAO {
         jdbc.update("UPDATE ZL_VAGA SET STATUS = :status WHERE ID = :id",
                 new MapSqlParameterSource("status", status.name()).addValue("id", id));
     }
-}
+
+    public Map<VagaStatus, Long> contarPorStatus(long ubsId) {
+        Map<VagaStatus, Long> mapa = new EnumMap<>(VagaStatus.class);
+        jdbc.query("SELECT STATUS, COUNT(*) AS QTD FROM ZL_VAGA WHERE UBS_ID = :ubs GROUP BY STATUS",
+                new MapSqlParameterSource("ubs", ubsId),
+                rs -> { mapa.put(VagaStatus.valueOf(rs.getString("STATUS")), rs.getLong("QTD")); });
+        return mapa;
+    }}

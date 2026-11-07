@@ -1,0 +1,16 @@
+{
+  "versao": "PROVISORIO",
+  "observacao": "Coeficientes PROVISORIOS e plausiveis. O notebook de Data Science substitui este arquivo (mesmos nomes de feature); nenhum codigo muda.",
+  "intercepto": -1.4,
+  "limiarAlto": 0.5,
+  "pesos": {
+    "idade": -0.012,
+    "diasAntecedencia": 0.025,
+    "bolsaFamilia": 0.2,
+    "hipertensao": -0.15,
+    "diabetes": -0.1,
+    "deficiencia": 0.05,
+    "lembreteEnviado": -0.3,
+    "faltasAnteriores": 0.45
+  }
+}

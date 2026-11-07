@@ -27,6 +27,10 @@ public class PacienteBO {
         return dao.listar().stream().map(p -> PacienteResponse.de(p, hoje)).toList();
     }
 
+    public java.util.Map<Long, Paciente> mapaPorId() {
+        return dao.listar().stream().collect(java.util.stream.Collectors.toMap(Paciente::id, p -> p));
+    }
+
     public Paciente buscarEntidade(long id) {
         return dao.buscarPorId(id).orElseThrow(() -> new RecursoNaoEncontradoException("Paciente", id));
     }

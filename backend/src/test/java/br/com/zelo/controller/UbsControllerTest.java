@@ -65,4 +65,18 @@ class UbsControllerTest {
                 .andExpect(status().isBadRequest())
                 .andExpect(jsonPath("$.title").value("Requisição inválida"));
     }
+
+    @Test
+    void rotaInexistenteDevolve404EnaoErroInterno() throws Exception {
+        mvc.perform(get("/api/v1/demo/resetar"))
+                .andExpect(status().isNotFound())
+                .andExpect(jsonPath("$.title").value("Não encontrado"));
+    }
+
+    @Test
+    void metodoErradoDevolve405() throws Exception {
+        mvc.perform(post("/api/v1/ubs/1"))
+                .andExpect(status().isMethodNotAllowed())
+                .andExpect(jsonPath("$.title").value("Método não permitido"));
+    }
 }

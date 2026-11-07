@@ -7,6 +7,9 @@ import br.com.zelo.exception.RegraNegocioException;
 import br.com.zelo.model.Consulta;
 import br.com.zelo.model.ConsultaStatus;
 import br.com.zelo.model.Origem;
+import br.com.zelo.model.Paciente;
+import br.com.zelo.model.Vaga;
+import br.com.zelo.model.VagaStatus;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -36,12 +39,14 @@ class ConsultaBOTest {
     @Mock PacienteBO pacientes;
     @Mock UbsBO ubs;
     @Mock ReferenciaBO referencia;
+    @Mock RiscoFaltaBO risco;
+    @Mock EncaixeBO encaixe;
 
     ConsultaBO bo;
 
     @BeforeEach
     void setUp() {
-        bo = new ConsultaBO(dao, vagas, pacientes, ubs, referencia, CLOCK);
+        bo = new ConsultaBO(dao, vagas, pacientes, ubs, referencia, risco, encaixe, CLOCK);
     }
 
     private static Consulta consulta(ConsultaStatus status) {
@@ -49,15 +54,21 @@ class ConsultaBOTest {
                 LocalDateTime.of(2026, 11, 1, 9, 0));
     }
 
+    private static Vaga vaga() {
+        return new Vaga(55L, 7L, 1L, 1L, LocalDateTime.of(2026, 11, 11, 9, 0), VagaStatus.ABERTA, LocalDateTime.of(2026, 11, 10, 8, 0));
+    }
+
     @Test
     void cancelarGravaStatusEAbreVaga() {
         when(dao.buscarPorIdParaAtualizar(7L)).thenReturn(Optional.of(consulta(ConsultaStatus.AGUARDANDO_CONFIRMACAO)));
+        when(vagas.abrirAPartirDe(any())).thenReturn(vaga());
 
         Consulta resultado = bo.cancelar(7L);
 
         assertThat(resultado.status()).isEqualTo(ConsultaStatus.CANCELADA);
         verify(dao).atualizarStatus(7L, ConsultaStatus.CANCELADA);
         verify(vagas).abrirAPartirDe(argThat(c -> c.id().equals(7L) && c.status() == ConsultaStatus.CANCELADA));
+        verify(encaixe).ofertarProximo(55L);
     }
 
     @Test
@@ -73,10 +84,12 @@ class ConsultaBOTest {
     @Test
     void naoRespondidaLiberaVaga() {
         when(dao.buscarPorIdParaAtualizar(7L)).thenReturn(Optional.of(consulta(ConsultaStatus.AGUARDANDO_CONFIRMACAO)));
+        when(vagas.abrirAPartirDe(any())).thenReturn(vaga());
 
         bo.transicionar(7L, ConsultaStatus.NAO_RESPONDIDA);
 
         verify(vagas).abrirAPartirDe(any());
+        verify(encaixe).ofertarProximo(55L);
     }
 
     @Test
@@ -111,12 +124,15 @@ class ConsultaBOTest {
     @Test
     void agendaNasceAgendadaComOrigemNormal() {
         LocalDateTime quando = LocalDateTime.of(2026, 11, 12, 9, 0);
+        Paciente paciente = new Paciente(1L, "Fulana Ficticia", java.time.LocalDate.of(1980, 1, 1), "(11) 90000-0000", 0, 0, false, false, false, false, false, false, 0);
+        when(pacientes.buscarEntidade(1L)).thenReturn(paciente);
+        when(risco.calcular(paciente, quando, false)).thenReturn(0.42);
         when(dao.inserir(any())).thenReturn(10L);
         when(dao.buscarPorId(10L)).thenReturn(Optional.of(consulta(ConsultaStatus.AGENDADA)));
 
         bo.agendar(new ConsultaRequest(1L, 1L, 1L, quando));
 
-        verify(dao).inserir(argThat(c -> c.status() == ConsultaStatus.AGENDADA && c.origem() == Origem.NORMAL
+        verify(dao).inserir(argThat(c -> c.status() == ConsultaStatus.AGENDADA && c.origem() == Origem.NORMAL && c.riscoFalta() == 0.42
                 && c.criadaEm().equals(LocalDateTime.of(2026, 11, 10, 8, 0)) && c.dataHora().equals(quando)));
     }
 
