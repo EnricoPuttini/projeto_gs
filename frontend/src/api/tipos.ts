@@ -87,6 +87,7 @@ export interface Impacto {
   taxaComparecimento: number | null
   consultasRealizadas: number
   faltas: number
+  moradoresAlertados: number
 }
 
 export interface PainelUbs {
@@ -97,4 +98,33 @@ export interface PainelUbs {
   vagas: VagaDetalhe[]
   ofertas: OfertaDetalhe[]
   impacto: Impacto
+}
+
+export type Intensidade = 'SILENCIOSO' | 'VIBRAR' | 'ALARME'
+export type TipoLocal = 'CASA' | 'TRABALHO' | 'FAMILIA' | 'OUTRO'
+
+export interface LocalSalvo {
+  id: number
+  apelido: string
+  lat: number
+  lng: number
+  tipo: TipoLocal
+  intensidade: Intensidade
+  ativo: boolean
+}
+
+export type LocalRequest = Omit<LocalSalvo, 'id'>
+
+export interface AlertaDetalhe {
+  id: number
+  localApelido: string
+  intensidade: Intensidade
+  areaNome: string
+  chuvaMm: number
+  nivel: 'ATENCAO' | 'ALTO' | 'CRITICO'
+  abrigoNome: string | null
+  abrigoEndereco: string | null
+  abrigoDistanciaMetros: number | null
+  rotaUrl: string | null
+  mensagem: string
 }

@@ -1,11 +1,13 @@
 import { useEffect, useMemo, useRef, useState } from 'react'
 import { useSearchParams } from 'react-router-dom'
 import { ApiError } from '../api/cliente'
-import { buscarPaciente, enviarMensagem, historico, ofertasPendentes } from '../api/endpoints'
+import { alertasAtivos, buscarPaciente, enviarMensagem, historico, ofertasPendentes } from '../api/endpoints'
 import type { Acao } from '../api/tipos'
+import { AlertaTelaCheia } from '../components/AlertaTelaCheia'
 import { Carregando, Erro, Vazio } from '../components/Estados'
 import { IconeEnviar, IconeMic, IconeSom } from '../components/Icones'
 import { LetraGrande } from '../components/LetraGrande'
+import { MeusLocais } from '../components/MeusLocais'
 import { OfertaCard } from '../components/OfertaCard'
 import { usePolling } from '../hooks/usePolling'
 import { usePreferencia } from '../hooks/usePreferencia'
@@ -22,6 +24,8 @@ export default function Cidadao({ embutido = false }: { embutido?: boolean }) {
   const paciente = usePolling(() => buscarPaciente(pacienteId), 60_000, pacienteId)
   const mensagens = usePolling(() => historico(pacienteId), INTERVALO_MS, pacienteId)
   const ofertas = usePolling(() => ofertasPendentes(pacienteId), INTERVALO_MS, pacienteId)
+  const alertas = usePolling(() => alertasAtivos(pacienteId), INTERVALO_MS, pacienteId)
+  const [aba, setAba] = useState<'conversa' | 'locais'>('conversa')
 
   const [texto, setTexto] = useState('')
   const [enviando, setEnviando] = useState(false)
@@ -75,10 +79,11 @@ export default function Cidadao({ embutido = false }: { embutido?: boolean }) {
   }, [lista.length, ofertas.dados?.length])
 
   const oferta = ofertas.dados?.[0]
+  const alerta = alertas.dados?.[0]
   const nome = paciente.dados?.nome.split(' ')[0] ?? ''
 
   return (
-    <div className={`mx-auto flex flex-col bg-[#e6efe9] ${embutido ? 'h-full' : 'h-dvh max-w-md'}`}>
+    <div className={`relative mx-auto flex flex-col bg-[#e6efe9] ${embutido ? 'h-full' : 'h-dvh max-w-md'}`}>
       <header className="flex items-center justify-between gap-2 bg-petroleo px-4 py-3 text-white">
         <div>
           <h1 className="text-xl font-extrabold leading-tight">Zelo</h1>
@@ -102,6 +107,25 @@ export default function Cidadao({ embutido = false }: { embutido?: boolean }) {
         </div>
       </header>
 
+      <div role="tablist" aria-label="Seções" className="grid grid-cols-2 bg-petroleo-escuro">
+        {([['conversa', 'Conversa'], ['locais', 'Meus locais']] as const).map(([id, rotulo]) => (
+          <button
+            key={id}
+            type="button"
+            role="tab"
+            aria-selected={aba === id}
+            onClick={() => setAba(id)}
+            className={`min-h-12 text-lg font-bold ${aba === id ? 'border-b-4 border-ambar bg-petroleo text-white' : 'text-white/80'}`}
+          >
+            {rotulo}
+          </button>
+        ))}
+      </div>
+
+      {aba === 'locais' ? (
+        <MeusLocais pacienteId={pacienteId} />
+      ) : (
+      <>
       <main className="flex-1 space-y-3 overflow-y-auto p-3" aria-live="polite" aria-label="Conversa">
         {mensagens.carregando && <Carregando texto="Abrindo a conversa…" />}
         {mensagens.erro && !mensagens.dados && <Erro mensagem={mensagens.erro} aoTentar={mensagens.atualizar} />}
@@ -221,6 +245,10 @@ export default function Cidadao({ embutido = false }: { embutido?: boolean }) {
           <IconeEnviar />
         </button>
       </form>
+      </>
+      )}
+
+      {alerta && <AlertaTelaCheia alerta={alerta} embutido={embutido} aoConfirmar={() => { alertas.atualizar(); mensagens.atualizar() }} />}
     </div>
   )
 }

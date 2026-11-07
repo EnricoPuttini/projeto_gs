@@ -4,6 +4,7 @@ import { Carregando } from './components/Estados'
 
 const Cidadao = lazy(() => import('./pages/Cidadao'))
 const Ubs = lazy(() => import('./pages/Ubs'))
+const Demo = lazy(() => import('./pages/Demo'))
 
 export default function App() {
   return (
@@ -12,6 +13,7 @@ export default function App() {
         <Routes>
           <Route path="/cidadao" element={<Cidadao />} />
           <Route path="/ubs" element={<Ubs />} />
+          <Route path="/demo" element={<Demo />} />
           <Route path="*" element={<Navigate to="/cidadao" replace />} />
         </Routes>
       </Suspense>
