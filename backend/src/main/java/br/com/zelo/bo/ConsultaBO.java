@@ -7,6 +7,7 @@ import br.com.zelo.exception.RegraNegocioException;
 import br.com.zelo.model.Consulta;
 import br.com.zelo.model.ConsultaStatus;
 import br.com.zelo.model.Origem;
+import br.com.zelo.model.Paciente;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -25,14 +26,19 @@ public class ConsultaBO {
     private final PacienteBO pacientes;
     private final UbsBO ubs;
     private final ReferenciaBO referencia;
+    private final RiscoFaltaBO risco;
+    private final EncaixeBO encaixe;
     private final Clock clock;
 
-    public ConsultaBO(ConsultaDAO dao, VagaBO vagas, PacienteBO pacientes, UbsBO ubs, ReferenciaBO referencia, Clock clock) {
+    public ConsultaBO(ConsultaDAO dao, VagaBO vagas, PacienteBO pacientes, UbsBO ubs, ReferenciaBO referencia,
+                      RiscoFaltaBO risco, EncaixeBO encaixe, Clock clock) {
         this.dao = dao;
         this.vagas = vagas;
         this.pacientes = pacientes;
         this.ubs = ubs;
         this.referencia = referencia;
+        this.risco = risco;
+        this.encaixe = encaixe;
         this.clock = clock;
     }
 
@@ -51,7 +57,7 @@ public class ConsultaBO {
     }
 
     public Consulta agendar(ConsultaRequest r) {
-        pacientes.buscarEntidade(r.pacienteId());
+        Paciente paciente = pacientes.buscarEntidade(r.pacienteId());
         ubs.buscar(r.ubsId());
         referencia.buscarEspecialidade(r.especialidadeId());
         LocalDateTime agora = LocalDateTime.now(clock);
@@ -59,7 +65,7 @@ public class ConsultaBO {
             throw new RegraNegocioException("A consulta precisa ser marcada para um horário futuro.");
         }
         Long id = dao.inserir(new Consulta(null, r.pacienteId(), r.ubsId(), r.especialidadeId(), r.dataHora(),
-                ConsultaStatus.AGENDADA, null, Origem.NORMAL, false, agora));
+                ConsultaStatus.AGENDADA, risco.calcular(paciente, r.dataHora(), false), Origem.NORMAL, false, agora));
         return buscar(id);
     }
 
@@ -73,7 +79,8 @@ public class ConsultaBO {
         dao.atualizarStatus(id, destino);
         Consulta nova = atual.comStatus(destino);
         if (destino.liberaVaga()) {
-            vagas.abrirAPartirDe(nova);
+            // A vaga recem-aberta ja segue para o proximo da fila, na mesma transacao.
+            encaixe.ofertarProximo(vagas.abrirAPartirDe(nova).id());
         }
         return nova;
     }

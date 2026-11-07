@@ -37,6 +37,11 @@ public class VagaBO {
         return buscar(dao.inserir(nova));
     }
 
+    /** Le a vaga travando a linha (FOR UPDATE) ate o fim da transacao: serializa o motor de encaixe. */
+    public Vaga buscarTravando(long id) {
+        return dao.buscarPorIdParaAtualizar(id).orElseThrow(() -> new RecursoNaoEncontradoException("Vaga", id));
+    }
+
     /** Unico caminho para mudar o status de uma vaga: valida a transicao antes de gravar. */
     public Vaga transicionar(long id, VagaStatus destino) {
         Vaga vaga = dao.buscarPorIdParaAtualizar(id).orElseThrow(() -> new RecursoNaoEncontradoException("Vaga", id));

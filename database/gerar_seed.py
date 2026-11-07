@@ -44,7 +44,7 @@ for i, n in ESPEC:
 # Pacientes: id 1 e a Dona Cida (persona), 64 anos. Casas espalhadas ~1,5 km das UBS.
 pacs = []
 for pid in range(1, 41):
-    nome = "Maria Aparecida (Dona Cida)" if pid == 1 else f"{NOMES[pid-1]} {random.choice(SOBRENOMES)}"
+    nome = "Cida Santos" if pid == 1 else f"{NOMES[pid-1]} {random.choice(SOBRENOMES)}"
     idade = 64 if pid == 1 else random.choice([5, 8, 17, 24, 29, 33, 38, 45, 52, 58, 61, 67, 72, 78])
     ubs = UBS[0] if pid <= 28 else UBS[1]
     lat = round(ubs[3] + random.uniform(-0.012, 0.012), 6)
