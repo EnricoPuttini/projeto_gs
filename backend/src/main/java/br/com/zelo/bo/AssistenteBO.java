@@ -1,5 +1,6 @@
 package br.com.zelo.bo;
 
+import br.com.zelo.dto.AlertaDTOs;
 import br.com.zelo.dto.AssistenteDTOs.Acao;
 import br.com.zelo.dto.AssistenteDTOs.Requisicao;
 import br.com.zelo.dto.AssistenteDTOs.Resposta;
@@ -43,11 +44,12 @@ public class AssistenteBO {
     private final ReferenciaBO referencia;
     private final MensagemBO mensagens;
     private final CanalMensageria canal;
+    private final AlertaBO alertas;
     private final Clock clock;
 
     public AssistenteBO(InterpretadorMensagem interpretador, PacienteBO pacientes, OfertaBO ofertaBO, EncaixeBO encaixe,
                         ConsultaBO consultaBO, UbsBO ubs, ReferenciaBO referencia, MensagemBO mensagens,
-                        CanalMensageria canal, Clock clock) {
+                        CanalMensageria canal, AlertaBO alertas, Clock clock) {
         this.interpretador = interpretador;
         this.pacientes = pacientes;
         this.ofertaBO = ofertaBO;
@@ -57,6 +59,7 @@ public class AssistenteBO {
         this.referencia = referencia;
         this.mensagens = mensagens;
         this.canal = canal;
+        this.alertas = alertas;
         this.clock = clock;
     }
 
@@ -82,6 +85,8 @@ public class AssistenteBO {
             case AFIRMATIVA -> oferta.isPresent() ? aceitarOferta(p, oferta.get()) : confirmarConsulta(p);
             case NEGATIVA -> oferta.isPresent() ? recusarOferta(oferta.get()) : negarConsulta(p);
             case CANCELAR -> oferta.isPresent() ? recusarOferta(oferta.get()) : cancelarProxima(p);
+            case SEGURO -> confirmarSeguranca(p);
+            case INSEGURO -> orientarEmergencia(p);
             case CONSULTA -> mostrarConsulta(p, oferta);
             case SAUDACAO, AJUDA, DESCONHECIDA -> ajuda(p, oferta, intencao);
         };
@@ -129,6 +134,23 @@ public class AssistenteBO {
         return new Resposta("Tudo bem, cancelei sua consulta de %s (%s). Obrigado por avisar: outra pessoa vai aproveitar a vaga."
                 .formatted(referencia.buscarEspecialidade(c.especialidadeId()).nome(), Formato.dataHora(c.dataHora())),
                 List.of());
+    }
+
+    private Resposta confirmarSeguranca(Paciente p) {
+        int encerrados = alertas.confirmarSeguroDoPaciente(p.id());
+        return new Resposta(encerrados > 0 ? "Que bom, %s! Avisei que você está seguro.".formatted(primeiroNome(p))
+                : "Que bom que você está bem, %s!".formatted(primeiroNome(p)), List.of());
+    }
+
+    /** Mensagem de seguranca: telefones de emergencia primeiro, abrigo do alerta aberto (se houver) depois. */
+    private Resposta orientarEmergencia(Paciente p) {
+        String texto = "Ligue agora para a Defesa Civil (199) ou para os Bombeiros (193). Não atravesse água parada.";
+        Optional<AlertaDTOs.AlertaDetalhe> aberto = alertas.listarDoPaciente(p.id(), true).stream().findFirst();
+        if (aberto.isPresent() && aberto.get().abrigoNome() != null) {
+            texto += " Vá para o abrigo mais perto: %s, %s. Rota: %s".formatted(aberto.get().abrigoNome(),
+                    aberto.get().abrigoEndereco(), aberto.get().rotaUrl());
+        }
+        return new Resposta(texto, List.of());
     }
 
     private Resposta mostrarConsulta(Paciente p, Optional<OfertaVaga> oferta) {

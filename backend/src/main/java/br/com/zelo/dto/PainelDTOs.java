@@ -33,7 +33,7 @@ public final class PainelDTOs {
     }
 
     public record Impacto(long vagasRecuperadas, long diasEsperaEconomizados, Double taxaComparecimento,
-                          long consultasRealizadas, long faltas) {
+                          long consultasRealizadas, long faltas, long moradoresAlertados) {
     }
 
     public record PainelUbs(Ubs ubs, LocalDateTime agora, List<ConsultaDetalhe> agenda, List<FilaDetalhe> fila,

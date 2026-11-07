@@ -1,5 +1,6 @@
 package br.com.zelo.job;
 
+import br.com.zelo.bo.AlertaBO;
 import br.com.zelo.bo.ConfirmacaoBO;
 import br.com.zelo.bo.EncaixeBO;
 import org.slf4j.Logger;
@@ -17,10 +18,12 @@ public class JobsProcessador {
 
     private final EncaixeBO encaixe;
     private final ConfirmacaoBO confirmacao;
+    private final AlertaBO alertas;
 
-    public JobsProcessador(EncaixeBO encaixe, ConfirmacaoBO confirmacao) {
+    public JobsProcessador(EncaixeBO encaixe, ConfirmacaoBO confirmacao, AlertaBO alertas) {
         this.encaixe = encaixe;
         this.confirmacao = confirmacao;
+        this.alertas = alertas;
     }
 
     /** Expira ofertas vencidas, uma transacao por oferta (falha em uma nao trava as outras). */
@@ -39,6 +42,10 @@ public class JobsProcessador {
 
     public int pedirConfirmacoes() {
         return confirmacao.pedirConfirmacoesDeAmanha();
+    }
+
+    public int processarAlertas() {
+        return alertas.processarAreas();
     }
 
     public int liberarSemResposta() {

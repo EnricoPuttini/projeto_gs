@@ -12,8 +12,9 @@ import java.util.Set;
  * Interpreta o texto (ou a transcricao da voz) por regras e palavras-chave em pt-BR. Sem LLM: e
  * deterministico e explicavel. Ignora caixa, acentos e pontuacao ("Não posso!!" == "nao posso").
  *
- * <p>Ordem de decisao (a primeira regra que casa vence): CANCELAR → NEGATIVA → AFIRMATIVA → CONSULTA
- * → SAUDACAO → AJUDA. "Nao" vem antes de "sim" porque "nao, pode ser outra pessoa" nega, e a
+ * <p>Ordem de decisao (a primeira regra que casa vence): INSEGURO → SEGURO → CANCELAR → NEGATIVA →
+ * AFIRMATIVA → CONSULTA → SAUDACAO → AJUDA. Seguranca vem primeiro: numa enchente, "nao estou seguro"
+ * nunca pode ser lido como um simples "nao". "Nao" vem antes de "sim" porque "nao, pode ser outra pessoa" nega, e a
  * palavra "pode" sozinha seria lida como aceite.
  */
 @Component
@@ -23,6 +24,8 @@ public class InterpretadorMensagem {
     private static final Set<String> NEGACAO = Set.of("nao", "nunca", "jamais", "recuso", "negativo", "dispenso");
     private static final Set<String> AFIRMACAO = Set.of("sim", "quero", "aceito", "aceitar", "confirmo", "confirmar",
             "claro", "ok", "okay", "topo", "bora", "beleza", "certo", "pode", "combinado", "uhum", "isso", "vou");
+    private static final Set<String> SEGURANCA = Set.of("seguro", "segura", "salvo", "salva");
+    private static final Set<String> PERIGO = Set.of("perigo", "alagando", "alagou", "enchente", "inundando", "inundou");
     private static final Set<String> CONSULTA = Set.of("consulta", "consultas", "agenda", "horario", "quando", "medico");
     private static final Set<String> SAUDACAO = Set.of("oi", "ola", "bom", "boa", "opa", "eae");
     private static final Set<String> AJUDA = Set.of("ajuda", "socorro", "como", "funciona", "menu");
@@ -32,10 +35,18 @@ public class InterpretadorMensagem {
         if (palavras.isEmpty()) {
             return Intencao.DESCONHECIDA;
         }
+        boolean nega = palavras.stream().anyMatch(NEGACAO::contains);
+        boolean dizSeguro = palavras.stream().anyMatch(SEGURANCA::contains);
+        if (palavras.stream().anyMatch(PERIGO::contains) || (dizSeguro && nega)) {
+            return Intencao.INSEGURO;
+        }
+        if (dizSeguro) {
+            return Intencao.SEGURO;
+        }
         if (palavras.stream().anyMatch(p -> RAIZES_CANCELAR.stream().anyMatch(p::startsWith))) {
             return Intencao.CANCELAR;
         }
-        if (palavras.stream().anyMatch(NEGACAO::contains)) {
+        if (nega) {
             return Intencao.NEGATIVA;
         }
         if (palavras.stream().anyMatch(AFIRMACAO::contains)) {
