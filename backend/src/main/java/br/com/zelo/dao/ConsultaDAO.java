@@ -9,7 +9,9 @@ import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 import org.springframework.stereotype.Repository;
 
 import java.time.LocalDateTime;
+import java.util.EnumMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 
 @Repository
@@ -67,4 +69,30 @@ public class ConsultaDAO extends BaseDAO {
         jdbc.update("UPDATE ZL_CONSULTA SET STATUS = :status WHERE ID = :id",
                 new MapSqlParameterSource("status", status.name()).addValue("id", id));
     }
-}
+
+    public List<Consulta> listarPorStatusEPeriodo(ConsultaStatus status, LocalDateTime inicio, LocalDateTime fim) {
+        return jdbc.query("SELECT " + COLUNAS + " FROM ZL_CONSULTA WHERE STATUS = :st AND DATA_HORA >= :ini "
+                        + "AND DATA_HORA < :fim ORDER BY DATA_HORA, ID",
+                new MapSqlParameterSource("st", status.name()).addValue("ini", inicio).addValue("fim", fim), MAPPER);
+    }
+
+    /** Consultas no status dado que acontecem ate {@code limite} (inclusive). */
+    public List<Consulta> listarPorStatusAte(ConsultaStatus status, LocalDateTime limite) {
+        return jdbc.query("SELECT " + COLUNAS + " FROM ZL_CONSULTA WHERE STATUS = :st AND DATA_HORA <= :lim "
+                        + "ORDER BY DATA_HORA, ID",
+                new MapSqlParameterSource("st", status.name()).addValue("lim", limite), MAPPER);
+    }
+
+    public List<Consulta> listarEncaixes(long ubsId) {
+        return jdbc.query("SELECT " + COLUNAS + " FROM ZL_CONSULTA WHERE UBS_ID = :ubs AND ORIGEM = 'ENCAIXE' "
+                        + "AND STATUS <> 'CANCELADA'", new MapSqlParameterSource("ubs", ubsId), MAPPER);
+    }
+
+    /** Quantidade de consultas da UBS por status (para a taxa de comparecimento). */
+    public Map<ConsultaStatus, Long> contarPorStatus(long ubsId) {
+        Map<ConsultaStatus, Long> mapa = new EnumMap<>(ConsultaStatus.class);
+        jdbc.query("SELECT STATUS, COUNT(*) AS QTD FROM ZL_CONSULTA WHERE UBS_ID = :ubs GROUP BY STATUS",
+                new MapSqlParameterSource("ubs", ubsId),
+                rs -> { mapa.put(ConsultaStatus.valueOf(rs.getString("STATUS")), rs.getLong("QTD")); });
+        return mapa;
+    }}
