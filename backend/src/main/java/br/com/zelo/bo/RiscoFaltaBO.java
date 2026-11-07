@@ -3,6 +3,7 @@ package br.com.zelo.bo;
 import br.com.zelo.model.Paciente;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.stereotype.Service;
 
@@ -35,6 +36,7 @@ public class RiscoFaltaBO {
     private final Modelo modelo;
     private final Clock clock;
 
+    @Autowired // dois construtores: o Spring precisa saber qual usar (o outro e so para testes)
     public RiscoFaltaBO(ObjectMapper mapper, Clock clock) throws IOException {
         this(carregar(mapper), clock);
     }

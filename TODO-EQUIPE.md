@@ -9,3 +9,6 @@
 | 5 | Conta no Render (backend web service + static site) e plano | M4 | equipe |
 | 6 | Preencher a Ficha da CitizenTech no `README.md` (nomes e RMs) | M4 | equipe |
 | 7 | Validar `docker compose up` e o `mvn verify` com Docker na máquina de vocês (aqui não havia Docker) | agora | equipe |
+| 8 | **Rodar o teste de concorrência** (`EncaixeConcorrenciaIT`) e o `UbsDAOIT` com Docker: `cd backend && mvn verify`. É a prova da regra "nunca 2 ofertas PENDENTES"; aqui ele foi pulado por falta de Docker | agora | equipe |
+| 9 | Confirmar com a UBS (ou o professor) a premissa de **espera regular = 45 dias** usada em "dias economizados" (`zelo.impacto.espera-regular-dias`) | até M3 | equipe |
+| 10 | Testar a voz no Chrome/Edge (Web Speech API) com microfone real; Firefox cai para texto | M2 | equipe |

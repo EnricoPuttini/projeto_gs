@@ -1,0 +1,41 @@
+@import '@fontsource-variable/figtree';
+@import 'tailwindcss';
+
+@theme {
+  --color-petroleo: #0f5c57;
+  --color-petroleo-escuro: #0a403c;
+  --color-ambar: #f2b84b;
+  --color-alerta: #c2410c;
+  --color-fundo: #eef3f1;
+  --color-tinta: #14302e;
+  --font-sans: 'Figtree Variable', system-ui, sans-serif;
+}
+
+html {
+  font-size: 16px;
+}
+/* "Letra grande": todas as medidas do Tailwind sao em rem, entao tudo cresce junto. */
+html.letra-grande {
+  font-size: 20px;
+}
+
+body {
+  margin: 0;
+  background: var(--color-fundo);
+  color: var(--color-tinta);
+  font-family: var(--font-sans);
+}
+
+/* Foco sempre visivel, com contraste tanto em fundo claro quanto escuro. */
+:focus-visible {
+  outline: 3px solid var(--color-petroleo-escuro);
+  outline-offset: 2px;
+  box-shadow: 0 0 0 6px var(--color-ambar);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  * {
+    animation-duration: 0.01ms !important;
+    transition-duration: 0.01ms !important;
+  }
+}
