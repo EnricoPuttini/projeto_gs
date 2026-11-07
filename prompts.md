@@ -5,3 +5,6 @@ Pedi arquitetura (mermaid), modelo de dados, endpoints, plano por marcos e pergu
 
 ## M1 — Base (backend, banco, CRUD)
 Pedi o projeto Spring Boot 3/Java 21 em camadas `model → dao → bo → controller`, DDL Oracle `ZL_*` com constraints nomeadas, seed simulado, docker-compose com Oracle Free, Swagger e tratamento de erros em `ProblemDetail`. A IA gerou o código, a máquina de estados declarativa (enums) e 24 testes; revisei as regras de transição e o DDL.
+
+## M2 — Fatia vertical (encaixe, confirmação, assistente, app e painel)
+Pedi o motor de encaixe com `SELECT ... FOR UPDATE` e prova de concorrência, confirmação D-1, assistente por regras em pt-BR, risco de falta por regressão logística lida de JSON e o frontend (chat com voz, cartão de vaga com contagem regressiva e painel com polling). A IA escreveu o código e 108 testes unitários; o teste de concorrência exige Docker e precisa ser rodado pela equipe.
