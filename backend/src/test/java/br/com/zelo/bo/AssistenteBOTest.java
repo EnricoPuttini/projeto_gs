@@ -50,13 +50,14 @@ class AssistenteBOTest {
     @Mock ReferenciaBO referencia;
     @Mock MensagemBO mensagens;
     @Mock CanalMensageria canal;
+    @Mock AlertaBO alertas;
 
     AssistenteBO bo;
 
     @BeforeEach
     void setUp() {
         bo = new AssistenteBO(new InterpretadorMensagem(), pacientes, ofertaBO, encaixe, consultaBO, ubs, referencia,
-                mensagens, canal, CLOCK);
+                mensagens, canal, alertas, CLOCK);
         when(pacientes.buscarEntidade(1L)).thenReturn(new Paciente(1L, "Cida Santos", LocalDate.of(1962, 3, 14),
                 "(11) 90000-0001", 0, 0, true, true, false, false, false, false, 0));
         when(ubs.buscar(1L)).thenReturn(new Ubs(1L, "UBS Teste", "Rua Teste", 0, 0));

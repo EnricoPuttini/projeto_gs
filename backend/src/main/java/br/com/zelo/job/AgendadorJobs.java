@@ -28,6 +28,12 @@ public class AgendadorJobs {
         jobs.pedirConfirmacoes();
     }
 
+    /** A previsao horaria muda devagar: consultar a cada 15 min basta e respeita a API gratuita. */
+    @Scheduled(fixedDelay = 900_000, initialDelay = 60_000)
+    public void processarAlertas() {
+        jobs.processarAlertas();
+    }
+
     @Scheduled(fixedDelay = 60_000, initialDelay = 30_000)
     public void liberarSemResposta() {
         jobs.liberarSemResposta();

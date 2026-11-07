@@ -1,6 +1,7 @@
 package br.com.zelo.bo;
 
 import br.com.zelo.config.ZeloProperties;
+import br.com.zelo.dao.AlertaDAO;
 import br.com.zelo.dao.ConsultaDAO;
 import br.com.zelo.dao.VagaDAO;
 import br.com.zelo.dto.PainelDTOs.Impacto;
@@ -18,11 +19,13 @@ public class ImpactoBO {
 
     private final VagaDAO vagas;
     private final ConsultaDAO consultas;
+    private final AlertaDAO alertas;
     private final ZeloProperties props;
 
-    public ImpactoBO(VagaDAO vagas, ConsultaDAO consultas, ZeloProperties props) {
+    public ImpactoBO(VagaDAO vagas, ConsultaDAO consultas, AlertaDAO alertas, ZeloProperties props) {
         this.vagas = vagas;
         this.consultas = consultas;
+        this.alertas = alertas;
         this.props = props;
     }
 
@@ -42,6 +45,6 @@ public class ImpactoBO {
         long faltas = porStatus.getOrDefault(ConsultaStatus.FALTA, 0L);
         // Sem consultas encerradas ainda nao existe taxa: devolve nulo e o painel mostra "—", nao 0%.
         Double taxa = realizadas + faltas == 0 ? null : (double) realizadas / (realizadas + faltas);
-        return new Impacto(recuperadas, dias, taxa, realizadas, faltas);
+        return new Impacto(recuperadas, dias, taxa, realizadas, faltas, alertas.contarMoradoresAlertados());
     }
 }

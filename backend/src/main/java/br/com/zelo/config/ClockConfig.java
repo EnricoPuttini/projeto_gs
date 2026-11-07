@@ -7,13 +7,13 @@ import java.time.Clock;
 
 /**
  * Unico ponto onde "agora" nasce. Todo codigo recebe o Clock por injecao; assim os testes fixam o
- * tempo e o modo demo pode avancar o relogio (relogio ajustavel entra no M3, sem mudar os consumidores).
+ * tempo e o modo demo pode avancar o relogio sem mudar nenhum consumidor.
  */
 @Configuration
 public class ClockConfig {
 
     @Bean
     public Clock clock(ZeloProperties props) {
-        return Clock.system(props.timezone());
+        return props.demoMode() ? new AjustavelClock(props.timezone()) : Clock.system(props.timezone());
     }
 }

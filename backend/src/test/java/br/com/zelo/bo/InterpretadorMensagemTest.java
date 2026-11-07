@@ -32,6 +32,19 @@ class InterpretadorMensagemTest {
         assertThat(interpretador.interpretar(texto)).isEqualTo(Intencao.CANCELAR);
     }
 
+    @ParameterizedTest
+    @ValueSource(strings = {"estou seguro", "tô seguro", "to segura", "Já estou salvo!", "SEGURO"})
+    void entendeConfirmacaoDeSeguranca(String texto) {
+        assertThat(interpretador.interpretar(texto)).isEqualTo(Intencao.SEGURO);
+    }
+
+    @ParameterizedTest
+    @ValueSource(strings = {"não estou seguro", "nao to seguro", "está alagando", "a água subiu, perigo", "enchente aqui"})
+    void entendeSituacaoDePerigoAntesDeQualquerNao(String texto) {
+        // "nao estou seguro" nunca pode virar uma simples NEGATIVA
+        assertThat(interpretador.interpretar(texto)).isEqualTo(Intencao.INSEGURO);
+    }
+
     @Test
     void negacaoVenceAfirmacaoNaMesmaFrase() {
         assertThat(interpretador.interpretar("não, pode dar para outra pessoa")).isEqualTo(Intencao.NEGATIVA);
