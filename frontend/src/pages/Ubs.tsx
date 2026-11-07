@@ -124,7 +124,7 @@ function Conteudo({ painel }: { painel: PainelUbs }) {
   const taxa = impacto.taxaComparecimento === null ? '—' : `${Math.round(impacto.taxaComparecimento * 100)}%`
   return (
     <div className="space-y-4">
-      <div className="grid grid-cols-1 gap-4 sm:grid-cols-3">
+      <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 xl:grid-cols-4">
         <Indicador rotulo="Vagas recuperadas" valor={String(impacto.vagasRecuperadas)} detalhe="consultas que seriam perdidas" />
         <Indicador
           rotulo="Dias de espera economizados"
@@ -139,6 +139,11 @@ function Conteudo({ painel }: { painel: PainelUbs }) {
               ? 'ainda sem consultas encerradas'
               : `${impacto.consultasRealizadas} compareceram, ${impacto.faltas} faltaram`
           }
+        />
+        <Indicador
+          rotulo="Moradores alertados"
+          valor={String(impacto.moradoresAlertados)}
+          detalhe="avisados antes da água chegar"
         />
       </div>
 

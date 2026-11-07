@@ -14,7 +14,7 @@
 | Impacto medido | Vagas recuperadas · dias de espera economizados · taxa de comparecimento · moradores alertados antes do alagamento. |
 | Dados | 100% simulados (nenhum dado pessoal real). |
 
-> Status: **M2 concluído** (encaixe, confirmação D-1, assistente, app do cidadão e painel). Faltam M3 (alertas de enchente, modo demo) e M4 (deploy). Veja `docs/` e `TODO-EQUIPE.md`.
+> Status: **M3 concluído** (alertas de enchente, "Meus locais", modo demo, indicadores). Falta o M4 (deploy no Render e roteiro da demo). Veja `docs/` e `TODO-EQUIPE.md`.
 
 ## Como rodar local
 
@@ -40,6 +40,7 @@ cp .env.example .env            # VITE_API_URL=http://localhost:8080
 npm install && npm run dev
 ```
 
+- Demo (celular + painel, com botões): <http://localhost:5173/demo> (exige `ZELO_DEMO_MODE=true` no backend; o `.env.example` já liga)
 - App do cidadão: <http://localhost:5173/cidadao> (use `?paciente=1` para a Dona Cida)
 - Painel da UBS: <http://localhost:5173/ubs>
 - Swagger UI: <http://localhost:8080/swagger-ui.html>
@@ -70,6 +71,10 @@ Para Oracle da FIAP: rode `01_ddl.sql` e `02_dml.sql` no seu schema e aponte `DB
 | POST | `/api/v1/assistente/mensagens` | Conversa com o Zelo (texto ou voz já transcrita) |
 | GET | `/api/v1/pacientes/{id}/mensagens` | Histórico do chat |
 | GET | `/api/v1/painel/ubs/{id}` | Agenda, fila, vagas, ofertas e impacto em uma chamada |
+| GET/POST | `/api/v1/pacientes/{id}/locais` · PUT `/api/v1/locais/{id}` | Meus locais e intensidade do alerta |
+| GET | `/api/v1/pacientes/{id}/alertas?ativos=true` | Alertas de enchente do morador |
+| POST | `/api/v1/alertas/{id}/seguro` | "Estou seguro" |
 | GET | `/api/v1/config` | Flag do modo demo |
+| POST | `/api/v1/demo/cancelar-consulta|chuva|avancar-relogio|resetar` | Modo demo (404 se `ZELO_DEMO_MODE` não for `true`) |
 
-Os demais endpoints (alertas, modo demo, métricas de moradores alertados) entram no M3.
+O job de alertas consulta a [Open-Meteo](https://open-meteo.com) a cada 15 min; se a API cair, o sistema segue e só registra o erro.
