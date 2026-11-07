@@ -1,0 +1,23 @@
+# Oracle Free local para desenvolver sem depender da rede da FIAP.
+# Uso: cp .env.example .env && docker compose up -d
+# O init.sh roda DDL + seed na primeira subida (volume zelo-oradata persiste os dados).
+services:
+  oracle:
+    image: gvenzl/oracle-free:23-slim
+    ports:
+      - "1521:1521"
+    environment:
+      ORACLE_PASSWORD: ${ORACLE_PASSWORD:?defina no .env}
+      APP_USER: ${DB_USER:-zelo}
+      APP_USER_PASSWORD: ${DB_PASSWORD:?defina no .env}
+    volumes:
+      - zelo-oradata:/opt/oracle/oradata
+      - ./database/docker/init.sh:/container-entrypoint-initdb.d/init.sh:ro
+      - ./database:/zelo-sql:ro
+    healthcheck:
+      test: ["CMD", "healthcheck.sh"]
+      interval: 10s
+      timeout: 5s
+      retries: 30
+volumes:
+  zelo-oradata:
