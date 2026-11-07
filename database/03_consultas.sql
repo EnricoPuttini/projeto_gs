@@ -1,0 +1,24 @@
+-- Consultas uteis para conferir o estado do banco durante a demo (somente leitura).
+
+-- Agenda de hoje e amanha por UBS
+SELECT c.ID, u.NOME AS UBS, e.NOME AS ESPEC, p.NOME AS PACIENTE, c.DATA_HORA, c.STATUS, c.RISCO_FALTA
+  FROM ZL_CONSULTA c
+  JOIN ZL_UBS u ON u.ID = c.UBS_ID
+  JOIN ZL_ESPECIALIDADE e ON e.ID = c.ESPEC_ID
+  JOIN ZL_PACIENTE p ON p.ID = c.PACIENTE_ID
+ WHERE c.DATA_HORA >= TRUNC(CURRENT_DATE) AND c.DATA_HORA < TRUNC(CURRENT_DATE) + 2
+ ORDER BY c.UBS_ID, c.DATA_HORA;
+
+-- Fila ativa por UBS e especialidade (mais antiga primeiro)
+SELECT f.UBS_ID, f.ESPEC_ID, p.NOME, f.GRAVIDADE, f.DATA_ENTRADA
+  FROM ZL_FILA f JOIN ZL_PACIENTE p ON p.ID = f.PACIENTE_ID
+ WHERE f.STATUS = 'ATIVA'
+ ORDER BY f.UBS_ID, f.ESPEC_ID, f.GRAVIDADE DESC, f.DATA_ENTRADA;
+
+-- Vagas e ofertas em andamento
+SELECT v.ID AS VAGA, v.STATUS AS VAGA_STATUS, o.ID AS OFERTA, o.STATUS AS OFERTA_STATUS, o.PACIENTE_ID, o.EXPIRA_EM
+  FROM ZL_VAGA v LEFT JOIN ZL_OFERTA o ON o.VAGA_ID = v.ID
+ ORDER BY v.ID DESC;
+
+-- Invariante da regra de concorrencia: deve retornar 0 linhas
+SELECT VAGA_ID, COUNT(*) FROM ZL_OFERTA WHERE STATUS = 'PENDENTE' GROUP BY VAGA_ID HAVING COUNT(*) > 1;
