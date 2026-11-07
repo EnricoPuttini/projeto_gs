@@ -7,7 +7,10 @@ import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 import org.springframework.stereotype.Repository;
 
+import java.time.LocalDateTime;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 import java.util.Optional;
 
 @Repository
@@ -68,4 +71,20 @@ public class OfertaDAO extends BaseDAO {
         jdbc.update("UPDATE ZL_OFERTA SET STATUS = :status WHERE ID = :id",
                 new MapSqlParameterSource("status", status.name()).addValue("id", id));
     }
-}
+
+    /** Ofertas PENDENTES cujo prazo ja passou em {@code agora}; o job as expira uma a uma. */
+    public List<Long> listarIdsPendentesVencidas(LocalDateTime agora) {
+        return jdbc.queryForList("SELECT ID FROM ZL_OFERTA WHERE STATUS = 'PENDENTE' AND EXPIRA_EM <= :agora ORDER BY ID",
+                new MapSqlParameterSource("agora", agora), Long.class);
+    }
+
+    /** Pacientes que ja receberam oferta desta vaga (qualquer status): ninguem recebe a mesma vaga duas vezes. */
+    public Set<Long> pacientesJaOfertados(long vagaId) {
+        return new HashSet<>(jdbc.queryForList("SELECT PACIENTE_ID FROM ZL_OFERTA WHERE VAGA_ID = :vaga",
+                new MapSqlParameterSource("vaga", vagaId), Long.class));
+    }
+
+    public long contarPendentesDaVaga(long vagaId) {
+        return jdbc.queryForObject("SELECT COUNT(*) FROM ZL_OFERTA WHERE VAGA_ID = :vaga AND STATUS = 'PENDENTE'",
+                new MapSqlParameterSource("vaga", vagaId), Long.class);
+    }}
