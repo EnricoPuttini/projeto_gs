@@ -14,3 +14,6 @@ Pedi o job de alerta com Open-Meteo (timeout, cache e fallback), a regra de raio
 
 ## M4 — Deploy e roteiro
 Pedi o Dockerfile multi-stage do backend, o blueprint do Render (backend Docker + frontend estático), o README de deploy e o roteiro da demo de 30 s e 3 min. A IA construiu a imagem e a executou contra o Oracle local para validar variáveis de ambiente, CORS e o modo demo desligado; o deploy real depende das credenciais da equipe.
+
+## M5 — Segurança e acessibilidade
+Pedi revisão de segurança (segredos, dependências, cabeçalhos, CORS) e auditoria de acessibilidade com ferramenta real. A IA rodou o axe-core em Chrome, corrigiu marcos de página, ordem de títulos e área rolável sem teclado, atualizou o Spring Boot e executou os testes de integração com Oracle via Testcontainers.
