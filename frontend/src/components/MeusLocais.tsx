@@ -31,7 +31,7 @@ function CartaoLocal({ local, aoMudar }: { local: LocalSalvo; aoMudar: (m: Parti
   return (
     <li className="rounded-2xl bg-white p-4 shadow-sm">
       <div className="flex items-center justify-between gap-3">
-        <h3 className="text-xl font-extrabold">{local.apelido}</h3>
+        <h2 className="text-xl font-extrabold">{local.apelido}</h2>
         <button
           type="button"
           role="switch"
@@ -125,7 +125,7 @@ function NovoLocal({ pacienteId, aoCriar }: { pacienteId: number; aoCriar: () =>
   const campo = 'min-h-12 w-full rounded-xl border-2 border-petroleo/40 bg-white px-3 text-lg'
   return (
     <form onSubmit={(e) => void salvar(e)} className="space-y-3 rounded-2xl bg-white p-4 shadow-sm">
-      <h3 className="text-xl font-extrabold">Adicionar um local</h3>
+      <h2 className="text-xl font-extrabold">Adicionar um local</h2>
       <label className="block text-base font-bold">
         Nome do local
         <input value={apelido} onChange={(e) => setApelido(e.target.value)} placeholder="Ex.: Casa da minha filha" maxLength={60} className={campo} />
@@ -192,7 +192,7 @@ export function MeusLocais({ pacienteId }: { pacienteId: number }) {
   }
 
   return (
-    <div className="flex-1 space-y-3 overflow-y-auto p-3">
+    <section aria-label="Meus locais" className="flex-1 space-y-3 overflow-y-auto p-3">
       <p className="text-lg">Escolha onde você quer ser avisado quando a chuva forte estiver chegando.</p>
       {locais.carregando && <Carregando texto="Buscando seus locais…" />}
       {locais.erro && !locais.dados && <Erro mensagem={locais.erro} aoTentar={locais.atualizar} />}
@@ -208,6 +208,6 @@ export function MeusLocais({ pacienteId }: { pacienteId: number }) {
         ))}
       </ul>
       <NovoLocal pacienteId={pacienteId} aoCriar={locais.atualizar} />
-    </div>
+    </section>
   )
 }
