@@ -14,7 +14,7 @@
 | Impacto medido | Vagas recuperadas · dias de espera economizados · taxa de comparecimento · moradores alertados antes do alagamento. |
 | Dados | 100% simulados (nenhum dado pessoal real). |
 
-> Status: **M3 concluído** (alertas de enchente, "Meus locais", modo demo, indicadores). Falta o M4 (deploy no Render e roteiro da demo). Veja `docs/` e `TODO-EQUIPE.md`.
+> Status: **M4 em andamento** — código, Docker e roteiro prontos; falta a equipe criar os serviços no Render (ver [`TODO-EQUIPE.md`](TODO-EQUIPE.md)).
 
 ## Como rodar local
 
@@ -47,6 +47,29 @@ npm install && npm run dev
 - Health: <http://localhost:8080/actuator/health>
 
 Testes: `cd backend && mvn verify` (os `*IT`, inclusive o de concorrência do encaixe, usam Testcontainers/Oracle e são pulados sem Docker). Frontend: `cd frontend && npm run build`.
+
+## Como fazer deploy (Render)
+
+O `render.yaml` na raiz descreve os dois serviços. O backend é um **Web Service Docker** (`backend/Dockerfile`, contexto na raiz do repositório) e o frontend um **Static Site**.
+
+1. No Render: **New + → Blueprint**, escolha este repositório e aprove `zelo-api` e `zelo-app`.
+2. Preencha as variáveis (nada disso vai para o Git):
+
+| Serviço | Variável | Valor |
+|---|---|---|
+| zelo-api | `DB_URL` | `jdbc:oracle:thin:@//HOST:1521/SERVICE` (ou `@HOST:1521:SID`) |
+| zelo-api | `DB_USER` / `DB_PASSWORD` | credenciais do schema |
+| zelo-api | `CORS_ORIGINS` | URL do `zelo-app`, sem barra final |
+| zelo-api | `ZELO_DEMO_MODE` | `false`; `true` só no dia da demo |
+| zelo-app | `VITE_API_URL` | URL do `zelo-api`, sem barra final |
+
+3. Rode `database/01_ddl.sql` e `database/02_dml.sql` no schema do Oracle (uma vez).
+4. Teste: `https://SEU-API.onrender.com/actuator/health` deve responder `UP`; depois abra o `zelo-app`.
+
+> O Render **não entra em rede privada**. O Oracle da FIAP precisa aceitar conexões vindas da internet; se só abrir pela rede/VPN da FIAP, o deploy não conecta e é preciso outro Oracle para a demo online.
+> Plano free: o backend dorme após inatividade e leva cerca de 50 s para acordar. Acorde-o antes da demo (ver [`docs/roteiro-demo.md`](docs/roteiro-demo.md)).
+
+Variáveis de ambiente: `DB_URL`, `DB_USER`, `DB_PASSWORD`, `CORS_ORIGINS`, `ZELO_DEMO_MODE` (backend) e `VITE_API_URL` (frontend). Opcionais: `zelo.encaixe.oferta-minutos` (15), `zelo.confirmacao.horas-limite-sem-resposta` (4), `zelo.impacto.espera-regular-dias` (45).
 
 ## Banco de dados
 
