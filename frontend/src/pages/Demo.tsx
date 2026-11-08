@@ -88,7 +88,7 @@ export default function Demo() {
         </div>
       </header>
 
-      <div className="mx-auto flex w-full max-w-[1500px] flex-1 flex-col items-start gap-6 p-4 lg:flex-row">
+      <main className="mx-auto flex w-full max-w-[1500px] flex-1 flex-col items-start gap-6 p-4 lg:flex-row">
         <section aria-label="Celular da Dona Cida" className="mx-auto shrink-0">
           <div className="relative h-[780px] w-[390px] overflow-hidden rounded-[2.5rem] border-8 border-tinta bg-white shadow-xl">
             <Cidadao embutido />
@@ -97,7 +97,7 @@ export default function Demo() {
         <section aria-label="Painel da UBS" className="h-[780px] min-w-0 flex-1 overflow-hidden rounded-2xl border border-petroleo/20 bg-fundo">
           <Ubs embutido />
         </section>
-      </div>
+      </main>
     </div>
   )
 }
