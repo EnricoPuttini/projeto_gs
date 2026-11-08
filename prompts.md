@@ -11,3 +11,6 @@ Pedi o motor de encaixe com `SELECT ... FOR UPDATE` e prova de concorrência, co
 
 ## M3 — Alertas de enchente, modo demo e indicadores
 Pedi o job de alerta com Open-Meteo (timeout, cache e fallback), a regra de raio/limiar com abrigo mais próximo e link de rota, "Meus locais", a tela cheia com som e vibração por intensidade, o relógio ajustável e a página /demo. A IA implementou e escreveu 142 testes; conferi a regra do limiar (soma de 3 h) e as definições dos indicadores.
+
+## M4 — Deploy e roteiro
+Pedi o Dockerfile multi-stage do backend, o blueprint do Render (backend Docker + frontend estático), o README de deploy e o roteiro da demo de 30 s e 3 min. A IA construiu a imagem e a executou contra o Oracle local para validar variáveis de ambiente, CORS e o modo demo desligado; o deploy real depende das credenciais da equipe.

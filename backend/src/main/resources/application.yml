@@ -8,6 +8,7 @@ spring:
     password: ${DB_PASSWORD}
     hikari:
       maximum-pool-size: 5
+      minimum-idle: 1   # o Oracle compartilhado da FIAP limita sessoes: nao mantenha conexoes ociosas
       connection-timeout: 10000
   jackson:
     default-property-inclusion: non_null

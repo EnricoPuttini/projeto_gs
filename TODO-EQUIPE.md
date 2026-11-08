@@ -14,3 +14,7 @@
 | 10 | Testar a voz no Chrome/Edge (Web Speech API) com microfone real; Firefox cai para texto | M2 | equipe |
 | 11 | Conferir que as coordenadas do seed (UBS, áreas de risco, abrigos) e a casa da Dona Cida batem com o bairro real escolhido; o alerta só dispara para locais dentro do raio da área | antes do M4 | equipe |
 | 12 | Testar a demo completa no Chrome com som: `/demo` → "Simular chuva forte" (sirene + vibração no celular real) | M3 | equipe |
+| 13 | **Criar os serviços no Render** (New + → Blueprint → este repo) e preencher as variáveis da tabela do README | M4 (até 15/11) | equipe |
+| 14 | **Confirmar se o Oracle da FIAP aceita conexão pela internet** (o Render não entra em VPN). Se não aceitar, escolher outro Oracle para a demo online (ex.: Oracle Cloud Free) | **agora** | equipe |
+| 15 | Rodar `01_ddl.sql` e `02_dml.sql` no schema de produção e anotar o `DB_URL` (formato service name ou SID) | M4 | equipe |
+| 16 | Ligar `ZELO_DEMO_MODE=true` só no dia da gravação e desligar depois (o demo libera o botão de resetar o banco) | gravação | equipe |
