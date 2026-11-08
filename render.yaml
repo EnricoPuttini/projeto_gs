@@ -1,0 +1,48 @@
+# Blueprint do Render: New + > Blueprint, apontando para este repositorio.
+# Valores com sync:false sao pedidos no painel na criacao e NUNCA ficam no Git.
+services:
+  - type: web
+    name: zelo-api
+    runtime: docker
+    dockerfilePath: ./backend/Dockerfile
+    dockerContext: .
+    plan: free
+    healthCheckPath: /actuator/health
+    envVars:
+      - key: DB_URL          # ex.: jdbc:oracle:thin:@//HOST:1521/SERVICE  ou  jdbc:oracle:thin:@HOST:1521:SID
+        sync: false
+      - key: DB_USER
+        sync: false
+      - key: DB_PASSWORD
+        sync: false
+      - key: CORS_ORIGINS    # URL do static site abaixo, ex.: https://zelo-app.onrender.com (sem barra final)
+        sync: false
+      - key: ZELO_DEMO_MODE  # "true" libera /demo e o botao de resetar o banco: ligue so no dia da demo
+        value: "false"
+
+  - type: web
+    name: zelo-app
+    runtime: static
+    rootDir: frontend
+    buildCommand: npm ci && npm run build
+    staticPublishPath: dist
+    envVars:
+      - key: NODE_VERSION   # o Vite 8 pede Node 20.19+
+        value: "22"
+      - key: VITE_API_URL    # URL publica do zelo-api, ex.: https://zelo-api.onrender.com
+        sync: false
+    headers:
+      - path: /*
+        name: X-Content-Type-Options
+        value: nosniff
+      - path: /*
+        name: X-Frame-Options
+        value: DENY
+      - path: /*
+        name: Referrer-Policy
+        value: no-referrer
+    routes:
+      # SPA: /cidadao, /ubs e /demo precisam servir o index.html
+      - type: rewrite
+        source: /*
+        destination: /index.html

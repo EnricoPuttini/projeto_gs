@@ -82,8 +82,10 @@ export default function Cidadao({ embutido = false }: { embutido?: boolean }) {
   const alerta = alertas.dados?.[0]
   const nome = paciente.dados?.nome.split(' ')[0] ?? ''
 
+  // Embutido (/demo), quem fornece o <main> e a pagina; sozinho, este componente e a propria pagina.
+  const Raiz = embutido ? 'div' : 'main'
   return (
-    <div className={`relative mx-auto flex flex-col bg-[#e6efe9] ${embutido ? 'h-full' : 'h-dvh max-w-md'}`}>
+    <Raiz className={`relative mx-auto flex flex-col bg-[#e6efe9] ${embutido ? 'h-full' : 'h-dvh max-w-md'}`}>
       <header className="flex items-center justify-between gap-2 bg-petroleo px-4 py-3 text-white">
         <div>
           <h1 className="text-xl font-extrabold leading-tight">Zelo</h1>
@@ -107,7 +109,7 @@ export default function Cidadao({ embutido = false }: { embutido?: boolean }) {
         </div>
       </header>
 
-      <div role="tablist" aria-label="Seções" className="grid grid-cols-2 bg-petroleo-escuro">
+      <nav aria-label="Seções" className="grid grid-cols-2 bg-petroleo-escuro" role="tablist">
         {([['conversa', 'Conversa'], ['locais', 'Meus locais']] as const).map(([id, rotulo]) => (
           <button
             key={id}
@@ -120,13 +122,13 @@ export default function Cidadao({ embutido = false }: { embutido?: boolean }) {
             {rotulo}
           </button>
         ))}
-      </div>
+      </nav>
 
       {aba === 'locais' ? (
         <MeusLocais pacienteId={pacienteId} />
       ) : (
       <>
-      <main className="flex-1 space-y-3 overflow-y-auto p-3" aria-live="polite" aria-label="Conversa">
+      <section className="flex-1 space-y-3 overflow-y-auto p-3" aria-live="polite" aria-label="Conversa">
         {mensagens.carregando && <Carregando texto="Abrindo a conversa…" />}
         {mensagens.erro && !mensagens.dados && <Erro mensagem={mensagens.erro} aoTentar={mensagens.atualizar} />}
         {mensagens.dados && lista.length === 0 && (
@@ -167,7 +169,7 @@ export default function Cidadao({ embutido = false }: { embutido?: boolean }) {
         )}
         {enviando && <Carregando texto="O Zelo está pensando…" />}
         <div ref={fim} />
-      </main>
+      </section>
 
       {mensagens.erro && mensagens.dados && (
         <p role="alert" className="bg-alerta px-3 py-2 text-base font-medium text-white">
@@ -205,6 +207,7 @@ export default function Cidadao({ embutido = false }: { embutido?: boolean }) {
       )}
 
       <form
+        aria-label="Enviar mensagem ao Zelo"
         className="flex items-center gap-2 bg-fundo p-3"
         onSubmit={(e) => {
           e.preventDefault()
@@ -249,6 +252,6 @@ export default function Cidadao({ embutido = false }: { embutido?: boolean }) {
       )}
 
       {alerta && <AlertaTelaCheia alerta={alerta} embutido={embutido} aoConfirmar={() => { alertas.atualizar(); mensagens.atualizar() }} />}
-    </div>
+    </Raiz>
   )
 }

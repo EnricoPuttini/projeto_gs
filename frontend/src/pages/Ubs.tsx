@@ -119,6 +119,7 @@ function OfertaLinha({ oferta }: { oferta: OfertaDetalhe }) {
   )
 }
 
+// A lista da fila rola: por isso o tabIndex={0} — area rolavel precisa ser alcancavel pelo teclado.
 function Conteudo({ painel }: { painel: PainelUbs }) {
   const { impacto } = painel
   const taxa = impacto.taxaComparecimento === null ? '—' : `${Math.round(impacto.taxaComparecimento * 100)}%`
@@ -188,7 +189,7 @@ function Conteudo({ painel }: { painel: PainelUbs }) {
         {painel.fila.length === 0 ? (
           <Vazio>Ninguém na fila.</Vazio>
         ) : (
-          <div className="max-h-96 overflow-auto">
+          <div className="max-h-96 overflow-auto" tabIndex={0} role="region" aria-label="Lista da fila de espera">
             <table className="w-full text-left text-base">
               <thead>
                 <tr className="border-b-2 border-petroleo/20 text-sm uppercase tracking-wide text-tinta/80">
@@ -227,6 +228,8 @@ export default function Ubs({ embutido = false }: { embutido?: boolean }) {
   const ubsId = Number(params.get('ubs') ?? 1)
   const unidades = usePolling(listarUbs, 120_000, 'ubs')
   const painel = usePolling(() => painelUbs(ubsId), INTERVALO_MS, ubsId)
+  // Embutido na /demo, o <main> da pagina e da propria demo (so pode haver um por pagina).
+  const Principal = embutido ? 'div' : 'main'
   const [atualizadoEm, setAtualizadoEm] = useState<Date | null>(null)
 
   useEffect(() => {
@@ -261,7 +264,7 @@ export default function Ubs({ embutido = false }: { embutido?: boolean }) {
         </div>
       </header>
 
-      <main className="mx-auto max-w-7xl p-4 md:p-6">
+      <Principal className="mx-auto max-w-7xl p-4 md:p-6">
         {painel.carregando && <Carregando texto="Carregando o painel…" />}
         {painel.erro && (
           <div className="mb-4">
@@ -269,7 +272,7 @@ export default function Ubs({ embutido = false }: { embutido?: boolean }) {
           </div>
         )}
         {painel.dados && <Conteudo painel={painel.dados} />}
-      </main>
+      </Principal>
     </div>
   )
 }
