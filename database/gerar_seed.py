@@ -1,8 +1,41 @@
 #!/usr/bin/env python3
 """Gera database/02_dml.sql de forma deterministica (random com semente fixa).
 Uso: python3 database/gerar_seed.py > database/02_dml.sql
-Todos os dados sao FICTICIOS. Bairro/UBS/corregos sao PLACEHOLDERS: edite as constantes abaixo e regere."""
+Pessoas FICTICIAS (nomes e telefones inventados), mas com perfil calibrado em dados REAIS: idade,
+hipertensao, diabetes, deficiencia e Bolsa Familia seguem as taxas por faixa etaria da base Kaggle
+"Medical Appointment No Shows" (frontend/src/dados/estatisticas.json, gerado por datascience/treinar_modelo.py),
+e o risco de falta de cada consulta e calculado com o MESMO modelo que o backend usa (modelo-falta.json).
+Bairro/UBS/corregos sao PLACEHOLDERS: edite as constantes abaixo e regere."""
+import json
+import math
 import random
+from pathlib import Path
+
+RAIZ = Path(__file__).resolve().parent.parent
+ESTAT = json.loads((RAIZ / "frontend/src/dados/estatisticas.json").read_text(encoding="utf-8"))
+MODELO = json.loads((RAIZ / "backend/src/main/resources/modelo-falta.json").read_text(encoding="utf-8"))
+FAIXAS = {"0-12": (1, 12), "13-17": (13, 17), "18-39": (18, 39), "40-59": (40, 59), "60+": (60, 88)}
+
+
+def faixa_de(idade):
+    return next(f for f, (a, b) in FAIXAS.items() if a <= idade <= b)
+
+
+def sorteia_idade():
+    """Faixa etaria pela distribuicao real da base; idade uniforme dentro da faixa."""
+    faixa = random.choices(list(ESTAT["distribuicaoFaixaEtaria"]), weights=ESTAT["distribuicaoFaixaEtaria"].values())[0]
+    return random.randint(*FAIXAS[faixa])
+
+
+def tem(condicao, idade):
+    return 1 if random.random() < ESTAT["prevalenciaPorFaixaEtaria"][condicao][faixa_de(idade)] else 0
+
+
+def risco(feat):
+    """Regressao logistica identica a do RiscoFaltaBO."""
+    z = MODELO["intercepto"] + sum(p * feat[n] for n, p in MODELO["pesos"].items())
+    return round(1 / (1 + math.exp(-z)), 3)
+
 
 random.seed(2026)
 BAIRRO = "Bairro Exemplo (PLACEHOLDER)"
@@ -43,22 +76,26 @@ for i, n in ESPEC:
 
 # Pacientes: id 1 e a Dona Cida (persona), 64 anos. Casas espalhadas ~1,5 km das UBS.
 pacs = []
+perfil = {}
 for pid in range(1, 41):
     nome = "Cida Santos" if pid == 1 else f"{NOMES[pid-1]} {random.choice(SOBRENOMES)}"
-    idade = 64 if pid == 1 else random.choice([5, 8, 17, 24, 29, 33, 38, 45, 52, 58, 61, 67, 72, 78])
+    gest = 1 if pid in (11, 23) else 0
+    idade = 64 if pid == 1 else (random.randint(19, 36) if gest else sorteia_idade())
     ubs = UBS[0] if pid <= 28 else UBS[1]
     lat = round(ubs[3] + random.uniform(-0.012, 0.012), 6)
     lng = round(ubs[4] + random.uniform(-0.012, 0.012), 6)
     if pid == 1:
         lat, lng = -23.5645, -46.6445  # dentro da area de risco 1 (demo de chuva)
-    hip = 1 if pid == 1 or (idade > 50 and random.random() < .5) else 0
-    dia = 1 if pid == 1 or (idade > 45 and random.random() < .3) else 0
-    defi = 1 if random.random() < .05 else 0
-    bolsa = 1 if random.random() < .35 else 0
-    gest = 1 if pid in (11, 23) else 0
+    # Dona Cida (persona) e hipertensa e diabetica por definicao do roteiro; os demais seguem as taxas reais.
+    hip = 1 if pid == 1 else tem("hipertensao", idade)
+    dia = 1 if pid == 1 else tem("diabetes", idade)
+    defi = tem("deficiencia", idade)
+    bolsa = tem("bolsaFamilia", idade)
     pcd = 1 if defi else 0
-    faltas = random.choice([0, 0, 0, 1, 2, 3])
+    faltas = random.choices([0, 1, 2, 3], weights=[75, 15, 7, 3])[0]
     pacs.append((pid, idade, gest))
+    perfil[pid] = {"idade": idade, "bolsaFamilia": bolsa, "hipertensao": hip, "diabetes": dia,
+                   "deficiencia": defi, "lembreteEnviado": 0, "faltasAnteriores": faltas}
     w(f"INSERT INTO ZL_PACIENTE (ID,NOME,DT_NASC,TELEFONE,LAT,LNG,HIPERTENSAO,DIABETES,DEFICIENCIA,BOLSA_FAMILIA,GESTANTE,PCD,FALTAS_ANT) "
       f"VALUES ({pid},'{nome}',ADD_MONTHS(TRUNC(CURRENT_DATE),-{idade*12+random.randint(1,11)}),'(11) 90000-{pid:04d}',{lat},{lng},{hip},{dia},{defi},{bolsa},{gest},{pcd},{faltas});")
 
@@ -77,10 +114,11 @@ for dia in range(0, 7):
             if pac == 1: pac = 3
             h = horas[k]
             status = "AGUARDANDO_CONFIRMACAO" if (dia == 1 and ubs_id == 1) else "AGENDADA"
-            risco = round(random.uniform(0.05, 0.75), 3)
+            # Consultas foram marcadas 10 dias atras (CRIADA_EM), entao a antecedencia e dia + 10.
+            risco_falta = risco({**perfil[pac], "diasAntecedencia": dia + 10})
             cons.append((cid, pac, ubs_id, esp, dia, h))
             w(f"INSERT INTO ZL_CONSULTA (ID,PACIENTE_ID,UBS_ID,ESPEC_ID,DATA_HORA,STATUS,RISCO_FALTA,ORIGEM,LEMBRETE_ENVIADO,CRIADA_EM) "
-              f"VALUES ({cid},{pac},{ubs_id},{esp},TRUNC(CURRENT_DATE)+{dia}+{h}/24,'{status}',{risco},'NORMAL',0,TRUNC(CURRENT_DATE)-10);")
+              f"VALUES ({cid},{pac},{ubs_id},{esp},TRUNC(CURRENT_DATE)+{dia}+{h}/24,'{status}',{risco_falta},'NORMAL',0,TRUNC(CURRENT_DATE)-10);")
 
 # Fila: ~25 pessoas. UBS1/Clinica Geral tem 12 (Dona Cida no topo: idosa, gravidade 3, 90 dias de espera).
 fila = [(1, 1, 1, 3, 90)]

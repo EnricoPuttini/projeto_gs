@@ -1,16 +1,23 @@
 {
-  "versao": "PROVISORIO",
-  "observacao": "Coeficientes PROVISORIOS e plausiveis. O notebook de Data Science substitui este arquivo (mesmos nomes de feature); nenhum codigo muda.",
-  "intercepto": -1.4,
-  "limiarAlto": 0.5,
+  "versao": "TREINADO-KAGGLE-2016",
+  "observacao": "Regressao logistica treinada em 110.527 consultas reais (Kaggle Medical Appointment No Shows, Vitoria/ES, 2016). Gerado por datascience/treinar_modelo.py; nao edite a mao.",
+  "intercepto": -1.63038,
+  "limiarAlto": 0.239,
   "pesos": {
-    "idade": -0.012,
-    "diasAntecedencia": 0.025,
-    "bolsaFamilia": 0.2,
-    "hipertensao": -0.15,
-    "diabetes": -0.1,
-    "deficiencia": 0.05,
-    "lembreteEnviado": -0.3,
-    "faltasAnteriores": 0.45
+    "idade": -0.0076,
+    "diasAntecedencia": 0.02389,
+    "bolsaFamilia": 0.2029,
+    "hipertensao": -0.0368,
+    "diabetes": 0.17797,
+    "deficiencia": -0.0356,
+    "lembreteEnviado": 0.36042,
+    "faltasAnteriores": 0.36474
+  },
+  "metricas": {
+    "aucTeste": 0.674,
+    "consultasTreino": 82890,
+    "consultasTeste": 27631,
+    "taxaFaltaGeral": 0.202,
+    "taxaFaltaNoGrupoAlto": 0.336
   }
 }
