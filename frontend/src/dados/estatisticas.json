@@ -1,0 +1,81 @@
+{
+  "fonte": "Kaggle - Medical Appointment No Shows (Joni Hoppen), CC BY-NC-SA 4.0",
+  "consultas": 110521,
+  "pacientes": 62298,
+  "taxaFalta": 0.202,
+  "prevalencia": {
+    "bolsaFamilia": 0.098,
+    "hipertensao": 0.197,
+    "diabetes": 0.072,
+    "deficiencia": 0.02,
+    "lembreteEnviado": 0.321
+  },
+  "idadeMedia": 37.1,
+  "diasAntecedenciaMediana": 4,
+  "prevalenciaPorFaixaEtaria": {
+    "bolsaFamilia": {
+      "0-12": 0.099,
+      "13-17": 0.154,
+      "18-39": 0.139,
+      "40-59": 0.093,
+      "60+": 0.028
+    },
+    "hipertensao": {
+      "0-12": 0.001,
+      "13-17": 0.004,
+      "18-39": 0.049,
+      "40-59": 0.286,
+      "60+": 0.549
+    },
+    "diabetes": {
+      "0-12": 0.001,
+      "13-17": 0.005,
+      "18-39": 0.014,
+      "40-59": 0.093,
+      "60+": 0.218
+    },
+    "deficiencia": {
+      "0-12": 0.005,
+      "13-17": 0.022,
+      "18-39": 0.016,
+      "40-59": 0.022,
+      "60+": 0.04
+    }
+  },
+  "distribuicaoFaixaEtaria": {
+    "0-12": 0.19,
+    "13-17": 0.057,
+    "18-39": 0.289,
+    "40-59": 0.272,
+    "60+": 0.192
+  },
+  "taxaFaltaPorFaixaEtaria": {
+    "0-12": 0.205,
+    "13-17": 0.266,
+    "18-39": 0.233,
+    "40-59": 0.188,
+    "60+": 0.153
+  },
+  "taxaFaltaComFaltaAnterior": 0.291,
+  "taxaFaltaSemFaltaAnterior": 0.187,
+  "taxaFaltaMesmoDia": 0.046,
+  "taxaFalta15DiasOuMais": 0.327,
+  "modelo": {
+    "aucTeste": 0.674,
+    "consultasTreino": 82890,
+    "consultasTeste": 27631,
+    "taxaFaltaGeral": 0.202,
+    "taxaFaltaNoGrupoAlto": 0.336,
+    "limiarAlto": 0.239,
+    "pesos": {
+      "idade": -0.0076,
+      "diasAntecedencia": 0.02389,
+      "bolsaFamilia": 0.2029,
+      "hipertensao": -0.0368,
+      "diabetes": 0.17797,
+      "deficiencia": -0.0356,
+      "lembreteEnviado": 0.36042,
+      "faltasAnteriores": 0.36474
+    }
+  }
+}

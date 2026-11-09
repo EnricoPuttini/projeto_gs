@@ -17,3 +17,6 @@ Pedi o Dockerfile multi-stage do backend, o blueprint do Render (backend Docker 
 
 ## M5 — Segurança e acessibilidade
 Pedi revisão de segurança (segredos, dependências, cabeçalhos, CORS) e auditoria de acessibilidade com ferramenta real. A IA rodou o axe-core em Chrome, corrigiu marcos de página, ordem de títulos e área rolável sem teclado, atualizou o Spring Boot e executou os testes de integração com Oracle via Testcontainers.
+
+## M5 — Dados reais e redesenho
+Pedi dados reais (Kaggle) e um site mais bonito e autoexplicativo. A IA baixou a base pública "Medical Appointment No Shows", treinou a regressão logística (AUC 0,674) substituindo os coeficientes provisórios, calibrou o seed com as taxas reais e redesenhou o site: página inicial com o problema e a solução, página "Como funciona" explicando cada dado, painel com explicações e demo guiada por passos.

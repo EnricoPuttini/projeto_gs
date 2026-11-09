@@ -1,13 +1,13 @@
 # Roteiro da demo
 
-Tudo sai da tela **/demo**: celular da Dona Cida à esquerda, painel da UBS à direita. Não precisa de preparação manual além do checklist abaixo.
+Tudo sai da tela **/demo**: roteiro numerado à esquerda (cada passo diz o que observar), celular da Dona Cida no centro e painel da UBS à direita. Para contextualizar a banca antes, use a página **Início** (problema e solução com dados reais) e **Como funciona** (o que significa cada número). Não precisa de preparação manual além do checklist abaixo.
 
 ## Checklist antes de gravar (5 minutos)
 
 1. Backend com `ZELO_DEMO_MODE=true` (no Render: variável de ambiente e redeploy). **Desligue depois**: com o demo ligado, qualquer pessoa com o link consegue resetar o banco.
 2. **Acorde o backend** (plano free do Render dorme e leva ~50 s): abra `https://SEU-API.onrender.com/actuator/health` e espere `{"status":"UP"}`.
 3. Abra `/demo` no **Chrome ou Edge** (Firefox não tem reconhecimento de voz), permita o microfone e deixe o som ligado.
-4. Clique em **Resetar dados**. Isso recarrega o seed com datas de hoje; sem isso a "consulta de amanhã" pode não existir.
+4. Clique em **Recomeçar do zero**. Isso recarrega o seed com datas de hoje; sem isso a "consulta de amanhã" pode não existir.
 5. Dê um clique em qualquer lugar da página (navegadores só liberam áudio depois de um toque).
 
 ## Versão de 30 segundos
@@ -15,9 +15,9 @@ Tudo sai da tela **/demo**: celular da Dona Cida à esquerda, painel da UBS à d
 | Tempo | Ação | O que o público vê |
 |---|---|---|
 | 0–5 s | Fala: "Consultas ficam vazias por falta, enquanto outras pessoas esperam meses." | Painel da UBS com agenda e fila |
-| 5–12 s | Clique em **Paciente cancela consulta** | Surge o cartão da vaga no celular da Dona Cida com contagem de 15 min; o painel mostra a oferta em andamento |
+| 5–12 s | Clique em **1 · Paciente cancela a consulta** | Surge o cartão da vaga no celular da Dona Cida com contagem de 15 min; o painel mostra a oferta em andamento |
 | 12–20 s | Dona Cida **fala**: "quero a vaga" | Confirmação em voz alta; a consulta de encaixe entra na agenda; **Vagas recuperadas** vira 1 |
-| 20–27 s | Clique em **Simular chuva forte no bairro** | Tela cheia vermelha, sirene e vibração, abrigo mais próximo e rota. Ela diz "estou seguro" |
+| 20–27 s | Clique em **3 · Simular chuva forte no bairro** | Tela cheia vermelha, sirene e vibração, abrigo mais próximo e rota. Ela diz "estou seguro" |
 | 27–30 s | Aponte os cartões de impacto | Vagas recuperadas, dias economizados e moradores alertados |
 
 ## Versão de 3 minutos (para a banca)
@@ -34,11 +34,11 @@ Tudo sai da tela **/demo**: celular da Dona Cida à esquerda, painel da UBS à d
 
 | Sintoma | Solução rápida |
 |---|---|
-| "Não há consulta de amanhã para cancelar" | Clique em **Resetar dados** |
+| "Não há consulta de amanhã para cancelar" | Clique em **Recomeçar do zero** |
 | Tela com "O servidor está demorando" | O backend está acordando; espere ~50 s (as telas tentam sozinhas) |
 | Microfone não funciona | Use os botões *Quero a vaga* / *Estou seguro* ou digite; o resultado é o mesmo |
 | Sem som no alarme | Clique na tela uma vez ou no botão *Tocar o som do alarme* |
-| Nenhum alerta de chuva | Já alertado nesta hora: **Resetar dados** e simule de novo |
+| Nenhum alerta de chuva | Já alertado nesta hora: **Recomeçar do zero** e simule de novo |
 
 ## Por que cada botão é honesto
 

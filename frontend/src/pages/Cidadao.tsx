@@ -1,11 +1,11 @@
 import { useEffect, useMemo, useRef, useState } from 'react'
-import { useSearchParams } from 'react-router-dom'
+import { Link, useSearchParams } from 'react-router-dom'
 import { ApiError } from '../api/cliente'
 import { alertasAtivos, buscarPaciente, enviarMensagem, historico, ofertasPendentes } from '../api/endpoints'
 import type { Acao } from '../api/tipos'
 import { AlertaTelaCheia } from '../components/AlertaTelaCheia'
-import { Carregando, Erro, Vazio } from '../components/Estados'
-import { IconeEnviar, IconeMic, IconeSom } from '../components/Icones'
+import { Carregando, Erro } from '../components/Estados'
+import { IconeEnviar, IconeMic, IconeSeta, IconeSom } from '../components/Icones'
 import { LetraGrande } from '../components/LetraGrande'
 import { MeusLocais } from '../components/MeusLocais'
 import { OfertaCard } from '../components/OfertaCard'
@@ -87,9 +87,17 @@ export default function Cidadao({ embutido = false }: { embutido?: boolean }) {
   return (
     <Raiz className={`relative mx-auto flex flex-col bg-[#e6efe9] ${embutido ? 'h-full' : 'h-dvh max-w-md'}`}>
       <header className="flex items-center justify-between gap-2 bg-petroleo px-4 py-3 text-white">
-        <div>
-          <h1 className="text-xl font-extrabold leading-tight">Zelo</h1>
-          <p className="text-sm text-white/90">{nome ? `Conversa com ${nome}` : 'Seu assistente de saúde'}</p>
+        <div className="flex items-center gap-3">
+          {!embutido && (
+            <Link to="/" aria-label="Voltar ao site do Zelo" className="flex size-11 items-center justify-center rounded-full text-white hover:bg-white/10">
+              <IconeSeta className="size-6 rotate-180" />
+            </Link>
+          )}
+          <span aria-hidden className="flex size-11 items-center justify-center rounded-full bg-ambar text-xl font-extrabold text-tinta">Z</span>
+          <div>
+            <h1 className="text-xl font-extrabold leading-tight">Zelo</h1>
+            <p className="text-sm text-white/90">{nome ? `Assistente de ${nome}` : 'Seu assistente de saúde'}</p>
+          </div>
         </div>
         <div className="flex gap-2">
           <button
@@ -105,7 +113,7 @@ export default function Cidadao({ embutido = false }: { embutido?: boolean }) {
           >
             <IconeSom />
           </button>
-          <LetraGrande claro />
+          <LetraGrande claro compacto />
         </div>
       </header>
 
@@ -132,7 +140,21 @@ export default function Cidadao({ embutido = false }: { embutido?: boolean }) {
         {mensagens.carregando && <Carregando texto="Abrindo a conversa…" />}
         {mensagens.erro && !mensagens.dados && <Erro mensagem={mensagens.erro} aoTentar={mensagens.atualizar} />}
         {mensagens.dados && lista.length === 0 && (
-          <Vazio>Oi! Eu sou o Zelo. Toque no microfone e fale comigo, ou escreva abaixo.</Vazio>
+          <div className="rounded-2xl bg-white p-4 shadow-sm">
+            <p className="text-lg font-bold">Oi{nome ? `, ${nome}` : ''}! Eu sou o Zelo.</p>
+            <p className="mt-1 text-base text-tinta/85">
+              Eu te aviso quando abrir uma vaga de consulta para você e quando vier chuva forte perto da sua casa. Pode falar comigo pelo
+              microfone ou escrever.
+            </p>
+            <p className="mt-3 text-sm font-bold text-tinta/70">Experimente:</p>
+            <div className="mt-1 flex flex-wrap gap-2">
+              {['Minha consulta', 'Cancelar consulta', 'Estou seguro'].map((t) => (
+                <button key={t} type="button" onClick={() => void enviar(t)} className="min-h-11 rounded-full border-2 border-petroleo px-4 text-base font-bold text-petroleo">
+                  {t}
+                </button>
+              ))}
+            </div>
+          </div>
         )}
 
         {lista.map((m) => (
