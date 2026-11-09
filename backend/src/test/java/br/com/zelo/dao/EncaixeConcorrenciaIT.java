@@ -21,6 +21,7 @@ import org.testcontainers.junit.jupiter.Testcontainers;
 import org.testcontainers.oracle.OracleContainer;
 
 import java.nio.file.Path;
+import java.time.Duration;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
@@ -41,7 +42,9 @@ import static org.assertj.core.api.Assertions.assertThat;
 class EncaixeConcorrenciaIT {
 
     @Container
-    static final OracleContainer ORACLE = new OracleContainer("gvenzl/oracle-free:23-slim-faststart");
+    static final OracleContainer ORACLE = new OracleContainer("gvenzl/oracle-free:23-slim-faststart")
+            // O Oracle leva ~1 min para abrir em maquinas modestas; o padrao do Testcontainers (~60 s) e curto demais.
+            .withStartupTimeout(Duration.ofMinutes(4));
 
     @DynamicPropertySource
     static void datasource(DynamicPropertyRegistry r) {

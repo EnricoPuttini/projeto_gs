@@ -13,6 +13,7 @@ import org.testcontainers.junit.jupiter.Testcontainers;
 
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Path;
+import java.time.Duration;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -24,7 +25,9 @@ import static org.assertj.core.api.Assertions.assertThat;
 class UbsDAOIT {
 
     @Container
-    static final OracleContainer ORACLE = new OracleContainer("gvenzl/oracle-free:23-slim-faststart");
+    static final OracleContainer ORACLE = new OracleContainer("gvenzl/oracle-free:23-slim-faststart")
+            // O Oracle leva ~1 min para abrir em maquinas modestas; o padrao do Testcontainers (~60 s) e curto demais.
+            .withStartupTimeout(Duration.ofMinutes(4));
 
     static NamedParameterJdbcTemplate jdbc;
 
