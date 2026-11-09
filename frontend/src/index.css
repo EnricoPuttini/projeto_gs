@@ -6,6 +6,8 @@
   --color-petroleo-escuro: #0a403c;
   --color-ambar: #f2b84b;
   --color-alerta: #c2410c;
+  /* texto de alerta sobre fundo claro/tingido: o #c2410c nao atinge AA ali */
+  --color-alerta-escuro: #9a3412;
   --color-fundo: #eef3f1;
   --color-tinta: #14302e;
   --font-sans: 'Figtree Variable', system-ui, sans-serif;

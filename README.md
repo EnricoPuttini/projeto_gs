@@ -71,6 +71,19 @@ O `render.yaml` na raiz descreve os dois serviços. O backend é um **Web Servic
 
 Variáveis de ambiente: `DB_URL`, `DB_USER`, `DB_PASSWORD`, `CORS_ORIGINS`, `ZELO_DEMO_MODE` (backend) e `VITE_API_URL` (frontend). Opcionais: `zelo.encaixe.oferta-minutos` (15), `zelo.confirmacao.horas-limite-sem-resposta` (4), `zelo.impacto.espera-regular-dias` (45).
 
+## Dados reais e modelo de risco
+
+O risco de falta é uma regressão logística **treinada em 110.521 consultas reais** do SUS (Vitória-ES, 2016), base pública [*Medical Appointment No Shows*](https://www.kaggle.com/datasets/joniarroba/noshowappointments) (Kaggle, licença CC BY-NC-SA 4.0). AUC de 0,674 em teste.
+
+```bash
+python -m venv datascience/.venv
+datascience/.venv/Scripts/python -m pip install pandas scikit-learn   # Linux/Mac: datascience/.venv/bin/python
+datascience/.venv/Scripts/python datascience/treinar_modelo.py
+python database/gerar_seed.py > database/02_dml.sql
+```
+
+O script baixa a base (o CSV não é versionado), gera `backend/src/main/resources/modelo-falta.json` (lido pelo backend sem mudar código) e `frontend/src/dados/estatisticas.json` (taxas reais mostradas no site e usadas para calibrar o seed). Os pacientes continuam fictícios.
+
 ## Banco de dados
 
 `database/01_ddl.sql` (tabelas `ZL_*`), `02_dml.sql` (seed simulado, **gerado** por `gerar_seed.py`; datas relativas a "hoje") e `03_consultas.sql` (consultas úteis na demo).

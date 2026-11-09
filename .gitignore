@@ -6,3 +6,8 @@ dist/
 .idea/
 .vscode/
 *.iml
+.env.*
+!.env.example
+.venv/
+datascience/dados/
+__pycache__/

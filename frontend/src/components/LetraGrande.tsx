@@ -2,7 +2,7 @@ import { useEffect } from 'react'
 import { usePreferencia } from '../hooks/usePreferencia'
 
 /** Botao "letra grande": liga uma classe no <html> que aumenta a fonte-base e, com ela, toda a interface. */
-export function LetraGrande({ claro = false }: { claro?: boolean }) {
+export function LetraGrande({ claro = false, compacto = false }: { claro?: boolean; compacto?: boolean }) {
   const [ligada, setLigada] = usePreferencia('letra-grande', false)
 
   useEffect(() => {
@@ -20,7 +20,7 @@ export function LetraGrande({ claro = false }: { claro?: boolean }) {
       } ${ligada ? (claro ? 'bg-white text-petroleo' : 'bg-petroleo text-white') : ''}`}
     >
       <span aria-hidden>A+</span> <span className="sr-only">Letra grande</span>
-      <span className="ml-1 text-sm font-medium">{ligada ? 'Ligada' : 'Letra grande'}</span>
+      {!compacto && <span className="ml-1 text-sm font-medium">{ligada ? 'Ligada' : 'Letra grande'}</span>}
     </button>
   )
 }
