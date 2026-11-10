@@ -21,7 +21,7 @@ export default function Inicio() {
   }, [])
 
   return (
-    <Apresentacao>
+    <Apresentacao setas>
       <Hero />
       {/* min-h reserva espaco: o rodape nao "sobe" e desce quando o resto chega */}
       <Suspense fallback={<div className="min-h-dvh" />}>{montarResto ? <Resto /> : <div className="min-h-dvh" />}</Suspense>
