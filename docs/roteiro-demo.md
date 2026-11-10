@@ -17,7 +17,7 @@ Tudo sai da tela **/demo**: roteiro numerado à esquerda (cada passo diz o que o
 | 0–5 s | Fala: "Consultas ficam vazias por falta, enquanto outras pessoas esperam meses." | Painel da UBS com agenda e fila |
 | 5–12 s | Clique em **1 · Paciente cancela a consulta** | Surge o cartão da vaga no celular da Dona Cida com contagem de 15 min; o painel mostra a oferta em andamento |
 | 12–20 s | Dona Cida **fala**: "quero a vaga" | Confirmação em voz alta; a consulta de encaixe entra na agenda; **Vagas recuperadas** vira 1 |
-| 20–27 s | Clique em **3 · Simular chuva forte no bairro** | Tela cheia vermelha, sirene e vibração, abrigo mais próximo e rota. Ela diz "estou seguro" |
+| 20–27 s | Clique em **3 · Simular alerta de enchente** | No cartão do passo a chuva prevista sobe até passar o limite da área (barra fica laranja), a área do córrego pulsa no mini mapa e o celular toca a sirene em tela cheia com o abrigo a 465 m. Dona Cida diz "tô seguro" (ou toca o botão): a confirmação viaja até o painel |
 | 27–30 s | Aponte os cartões de impacto | Vagas recuperadas, dias economizados e moradores alertados |
 
 ## Versão de 3 minutos (para a banca)
@@ -26,7 +26,7 @@ Tudo sai da tela **/demo**: roteiro numerado à esquerda (cada passo diz o que o
 2. Mostre o **painel**: risco de falta em cor, número e palavra ("65% · Alto"), fila ordenada pelo motor (prioridade legal, gravidade, espera, distância, risco).
 3. **Cancelamento → vaga**: fluxo da tabela acima. Comente que a oferta é do próximo da fila na mesma UBS e especialidade, e que quem cancelou não recebe a própria vaga.
 4. **Oferta que expira**: clique em **Avançar relógio 15 min** com outra oferta aberta. A vaga passa ao próximo da fila sozinha.
-5. **Chuva**: simule e mostre as três intensidades em *Meus locais* (silencioso, vibrar, alarme).
+5. **Enchente**: passo 3 completo (chuva sobe → área pulsa → alerta → "estou seguro"). Para repetir na gravação, use **Resetar a simulação** no próprio passo. Depois mostre *Meus locais*: o mapa com as áreas de alagamento e as três intensidades (silencioso, vibrar, alarme).
 6. **Acessibilidade**: ative *Letra grande*, use só o teclado (foco visível) e ouça a resposta com o botão "Ouvir".
 7. **Código**: Swagger (`/swagger-ui.html`), camadas `model → dao → bo → controller` e o teste de concorrência do encaixe.
 
@@ -38,7 +38,8 @@ Tudo sai da tela **/demo**: roteiro numerado à esquerda (cada passo diz o que o
 | Tela com "O servidor está demorando" | O backend está acordando; espere ~50 s (as telas tentam sozinhas) |
 | Microfone não funciona | Use os botões *Quero a vaga* / *Estou seguro* ou digite; o resultado é o mesmo |
 | Sem som no alarme | Clique na tela uma vez ou no botão *Tocar o som do alarme* |
-| Nenhum alerta de chuva | Já alertado nesta hora: **Recomeçar do zero** e simule de novo |
+| Nenhum alerta de chuva | Já alertado nesta hora: **Resetar a simulação** (no passo 3) e simule de novo |
+| Painel não rola com a roda do mouse | Corrigido nesta versão; se acontecer, atualize a página (Ctrl+F5) |
 
 ## Por que cada botão é honesto
 

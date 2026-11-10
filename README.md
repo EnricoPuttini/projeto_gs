@@ -48,6 +48,10 @@ npm install && npm run dev
 
 Testes: `cd backend && mvn verify` (os `*IT`, inclusive o de concorrência do encaixe, usam Testcontainers/Oracle e são pulados sem Docker). Frontend: `cd frontend && npm run build`.
 
+Dicas de teste:
+- Os `*IT` sobem um Oracle próprio (cerca de 1 min para abrir). Com pouca memória no Docker (menos de 4 GB), pare o Oracle da demo antes: `docker compose stop oracle` e depois `docker compose start oracle`.
+- Testes de navegador (Playwright, usa o Chrome instalado): com site e API no ar, `cd frontend && npm run e2e`. Para testar o Render: `E2E_URL=https://zelo-app-cnp7.onrender.com npm run e2e`.
+
 ## Como fazer deploy (Render)
 
 O `render.yaml` na raiz descreve os dois serviços. O backend é um **Web Service Docker** (`backend/Dockerfile`, contexto na raiz do repositório) e o frontend um **Static Site**.

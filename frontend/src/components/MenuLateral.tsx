@@ -71,13 +71,13 @@ export function MenuLateral({ children, aPartirDeLg = false, semMenuInferior = f
             <button
               type="button"
               aria-expanded={fixo}
-              aria-label={fixo ? 'Recolher o menu' : 'Manter o menu aberto'}
               title={fixo ? 'Recolher o menu' : 'Manter o menu aberto'}
               onClick={() => setFixo(!fixo)}
               className={`flex min-h-12 items-center gap-3 rounded-xl px-3 text-base font-semibold hover:bg-white/10 ${fixo ? 'text-ambar' : 'text-papel/80'}`}
             >
               <IconeAlfinete className="size-6 shrink-0" />
-              <span aria-hidden className={`whitespace-nowrap transition-opacity duration-200 ${rotuloVisivel}`}>{fixo ? 'Recolher' : 'Fixar aberto'}</span>
+              {/* o texto visivel E o nome do botao (fica no DOM mesmo com a barra recolhida) */}
+              <span className={`whitespace-nowrap transition-opacity duration-200 ${rotuloVisivel}`}>{fixo ? 'Recolher o menu' : 'Manter o menu aberto'}</span>
             </button>
           </div>
         </nav>
@@ -94,13 +94,16 @@ export function MenuLateral({ children, aPartirDeLg = false, semMenuInferior = f
                 <NavLink
                   to={para}
                   end={para === '/'}
-                  aria-label={rotulo}
                   className={({ isActive }) =>
                     `flex min-h-16 flex-col items-center justify-center gap-0.5 text-xs font-bold ${isActive ? 'text-ambar' : 'text-papel/85'}`
                   }
                 >
                   <Icone className="size-6" />
-                  <span aria-hidden>{curto}</span>
+                  {/* nome acessivel = texto visivel + nome completo: quem usa comando de voz diz o que ve ("Demo") */}
+                  <span>
+                    {curto}
+                    {curto !== rotulo && <span className="sr-only"> ({rotulo})</span>}
+                  </span>
                 </NavLink>
               </li>
             ))}
