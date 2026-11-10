@@ -1,9 +1,12 @@
-import { useState } from 'react'
+import { lazy, Suspense, useState } from 'react'
 import { ApiError } from '../api/cliente'
 import { atualizarLocal, criarLocal, listarLocais } from '../api/endpoints'
 import type { Intensidade, LocalRequest, LocalSalvo, TipoLocal } from '../api/tipos'
 import { usePolling } from '../hooks/usePolling'
 import { Carregando, Erro, Vazio } from './Estados'
+
+// Leaflet so carrega quando a aba "Meus locais" abre: nao pesa o resto do app
+const MapaLocais = lazy(() => import('./MapaLocais'))
 
 const INTENSIDADES: { valor: Intensidade; rotulo: string; ajuda: string }[] = [
   { valor: 'SILENCIOSO', rotulo: 'Silencioso', ajuda: 'só aparece na tela' },
@@ -192,7 +195,7 @@ export function MeusLocais({ pacienteId }: { pacienteId: number }) {
   }
 
   return (
-    <section aria-label="Meus locais" className="flex-1 space-y-3 overflow-y-auto p-3">
+    <section aria-label="Meus locais" className="flex-1 space-y-3 overflow-y-auto p-3" data-lenis-prevent>
       <p className="text-lg">Escolha onde você quer ser avisado quando a chuva forte estiver chegando.</p>
       {locais.carregando && <Carregando texto="Buscando seus locais…" />}
       {locais.erro && !locais.dados && <Erro mensagem={locais.erro} aoTentar={locais.atualizar} />}
@@ -201,6 +204,9 @@ export function MeusLocais({ pacienteId }: { pacienteId: number }) {
           {erro}
         </p>
       )}
+      <Suspense fallback={<div aria-hidden className="esqueleto h-72" />}>
+        <MapaLocais pacienteId={pacienteId} locais={locais.dados ?? []} aoSalvar={locais.atualizar} />
+      </Suspense>
       {locais.dados && locais.dados.length === 0 && <Vazio>Você ainda não tem nenhum local. Adicione o primeiro abaixo.</Vazio>}
       <ul className="space-y-3">
         {locais.dados?.map((l) => (

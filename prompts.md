@@ -23,3 +23,7 @@ Pedi dados reais (Kaggle) e um site mais bonito e autoexplicativo. A IA baixou a
 
 ## M5 — Redesign "inesquecível"
 Pedi um redesign cinematográfico nas páginas de apresentação e calmo no produto, com GSAP/ScrollTrigger, Lenis, Fraunces, storytelling em 9 seções e metas de axe 0 violações e Lighthouse mobile ≥ 90. A IA escreveu `docs/design.md`, implementou seção por seção conferindo prints em 390 e 1440 px, e otimizou por experimento (cortou a grade decorativa do hero, desligou o Lenis no toque, montou as seções progressivamente): Performance mediana 92, Acessibilidade 100.
+
+## M5 — Melhorias pelo feedback de usuário real
+Pedi a correção do scroll do painel na /demo (causa: Lenis capturando a roda do mouse, coberta por teste Playwright), a simulação encadeada da enchente com "estou seguro" por voz, o app do cidadão dentro do celular no desktop, menu lateral recolhível, setas entre seções e um mapa Leaflet/OpenStreetMap em "Meus locais" com fallback em SVG.
+A IA implementou item a item verificando pela interface; corrigiu no caminho a área errada na simulação e nomes acessíveis que não continham o texto visível.

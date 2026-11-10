@@ -93,7 +93,7 @@ function Agenda({ consultas, hoje }: { consultas: ConsultaDetalhe[]; hoje: strin
   const dias = [...new Set(consultas.map((c) => diaDe(c.dataHora)))].sort()
   return (
     // em tela estreita a agenda rola na horizontal: precisa ser alcancavel pelo teclado
-    <div className="relative overflow-x-auto" tabIndex={0} role="region" aria-label="Tabela da agenda (rolável)">
+    <div className="relative overflow-x-auto" data-lenis-prevent tabIndex={0} role="region" aria-label="Tabela da agenda (rolável)">
       <table className="w-full text-left text-base">
         <caption className="sr-only">Consultas de hoje e amanhã com situação e risco de falta</caption>
         <thead>
@@ -155,7 +155,7 @@ function Fila({ fila }: { fila: FilaDetalhe[] }) {
   if (fila.length === 0) return <Vazio>Ninguém na fila.</Vazio>
   const especialidades = [...new Set(fila.map((f) => f.especialidade))]
   return (
-    <div className="relative max-h-[28rem] overflow-auto" tabIndex={0} role="region" aria-label="Lista da fila de espera">
+    <div className="relative max-h-[28rem] overflow-auto" data-lenis-prevent tabIndex={0} role="region" aria-label="Lista da fila de espera">
       <table className="w-full text-left text-base">
         <caption className="sr-only">Fila de espera por especialidade, na ordem em que as vagas são oferecidas</caption>
         <thead className="sticky top-0 bg-white">
@@ -276,7 +276,7 @@ export default function Ubs({ embutido = false }: { embutido?: boolean }) {
     <label className="flex min-w-0 max-w-full flex-wrap items-center gap-2 text-base font-semibold">
       Unidade
       <select value={ubsId} onChange={(e) => setParams({ ubs: e.target.value })} className="min-h-11 min-w-0 max-w-full rounded-lg border border-petroleo/20 bg-white px-3 text-base text-tinta">
-        {(unidades.dados ?? [{ id: ubsId, nome: `UBS ${ubsId}`, endereco: '' }]).map((u) => (
+        {(unidades.dados ?? [{ id: ubsId, nome: `UBS ${ubsId}`, endereco: '', lat: 0, lng: 0 }]).map((u) => (
           <option key={u.id} value={u.id}>{u.nome}</option>
         ))}
       </select>
@@ -307,7 +307,7 @@ export default function Ubs({ embutido = false }: { embutido?: boolean }) {
 
   if (embutido) {
     return (
-      <div className="h-full overflow-y-auto">
+      <div className="h-full overflow-y-auto" data-lenis-prevent>
         <div className="sticky top-0 z-10 flex flex-wrap items-center justify-between gap-3 border-b border-petroleo/10 bg-white/95 px-5 py-3 backdrop-blur">
           <div>
             <p className="text-lg font-extrabold">Painel da UBS</p>

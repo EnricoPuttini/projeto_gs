@@ -11,3 +11,5 @@ dist/
 .venv/
 datascience/dados/
 __pycache__/
+frontend/test-results/
+frontend/playwright-report/

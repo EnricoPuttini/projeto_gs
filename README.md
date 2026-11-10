@@ -14,7 +14,7 @@
 | Impacto medido | Vagas recuperadas · dias de espera economizados · taxa de comparecimento · moradores alertados antes do alagamento. |
 | Dados | 100% simulados (nenhum dado pessoal real). |
 
-> Status: **M4 em andamento** — código, Docker e roteiro prontos; falta a equipe criar os serviços no Render (ver [`TODO-EQUIPE.md`](TODO-EQUIPE.md)).
+> Status: **no ar** — site: <https://zelo-app-cnp7.onrender.com> · API: <https://zelo-api-cnp7.onrender.com/swagger-ui.html> (banco: Oracle da FIAP). Plano free: o backend dorme sem uso e leva ~50 s para acordar.
 
 ## Como rodar local
 
@@ -48,6 +48,10 @@ npm install && npm run dev
 
 Testes: `cd backend && mvn verify` (os `*IT`, inclusive o de concorrência do encaixe, usam Testcontainers/Oracle e são pulados sem Docker). Frontend: `cd frontend && npm run build`.
 
+Dicas de teste:
+- Os `*IT` sobem um Oracle próprio (cerca de 1 min para abrir). Com pouca memória no Docker (menos de 4 GB), pare o Oracle da demo antes: `docker compose stop oracle` e depois `docker compose start oracle`.
+- Testes de navegador (Playwright, usa o Chrome instalado): com site e API no ar, `cd frontend && npm run e2e`. Para testar o Render: `E2E_URL=https://zelo-app-cnp7.onrender.com npm run e2e`.
+
 ## Como fazer deploy (Render)
 
 O `render.yaml` na raiz descreve os dois serviços. O backend é um **Web Service Docker** (`backend/Dockerfile`, contexto na raiz do repositório) e o frontend um **Static Site**.
@@ -62,6 +66,8 @@ O `render.yaml` na raiz descreve os dois serviços. O backend é um **Web Servic
 | zelo-api | `CORS_ORIGINS` | URL do `zelo-app`, sem barra final |
 | zelo-api | `ZELO_DEMO_MODE` | `false`; `true` só no dia da demo |
 | zelo-app | `VITE_API_URL` | URL do `zelo-api`, sem barra final |
+
+> **Atenção aos nomes:** se `zelo-api`/`zelo-app` já existirem no Render, ele acrescenta um sufixo (aqui ficou `-cnp7`). Use as URLs **reais** em `VITE_API_URL` e `CORS_ORIGINS` e, depois de mudar `VITE_API_URL`, rode **Manual Deploy → Clear build cache & deploy** (o endereço é gravado no build).
 
 3. Rode `database/01_ddl.sql` e `database/02_dml.sql` no schema do Oracle (uma vez).
 4. Teste: `https://SEU-API.onrender.com/actuator/health` deve responder `UP`; depois abra o `zelo-app`.
