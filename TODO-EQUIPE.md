@@ -14,8 +14,9 @@
 | 10 | Testar a voz no Chrome/Edge (Web Speech API) com microfone real; Firefox cai para texto | M2 | equipe |
 | 11 | Conferir que as coordenadas do seed (UBS, áreas de risco, abrigos) e a casa da Dona Cida batem com o bairro real escolhido; o alerta só dispara para locais dentro do raio da área | antes do M4 | equipe |
 | 12 | Testar a demo completa no Chrome com som: `/demo` → "Simular chuva forte" (sirene + vibração no celular real) | M3 | equipe |
-| 13 | **Criar os serviços no Render** (New + → Blueprint → este repo) e preencher as variáveis da tabela do README | M4 (até 15/11) | equipe |
+| 13 | ~~Criar os serviços no Render~~ **FEITO (10/11)**: <https://zelo-app-cnp7.onrender.com> e <https://zelo-api-cnp7.onrender.com>. Antes: **Criar os serviços no Render** (New + → Blueprint → este repo) e preencher as variáveis da tabela do README | M4 (até 15/11) | equipe |
 | 14 | ~~Confirmar se o Oracle da FIAP aceita conexão pela internet~~ **FEITO (10/11)**: aceita (Oracle 19c, `oracle.fiap.com.br:1521`, SID `ORCL`, usuário com prefixo `rm`). Container do backend testado contra ele. Antes: **Confirmar se o Oracle da FIAP aceita conexão pela internet** (o Render não entra em VPN). Se não aceitar, escolher outro Oracle para a demo online (ex.: Oracle Cloud Free) | **agora** | equipe |
 | 15 | ~~Rodar DDL e seed no schema de produção~~ **FEITO (10/11)** no schema RM561400. Antes: Rodar `01_ddl.sql` e `02_dml.sql` no schema de produção e anotar o `DB_URL` (formato service name ou SID) | M4 | equipe |
 | 16 | Ligar `ZELO_DEMO_MODE=true` só no dia da gravação e desligar depois (o demo libera o botão de resetar o banco) | gravação | equipe |
 | 17 | Trocar a senha do Oracle da FIAP depois da entrega (ela foi compartilhada durante o desenvolvimento) e atualizar `DB_PASSWORD` no Render | após 19/11 | Enrico |
+| 18 | **No dia da gravação:** ligar `ZELO_DEMO_MODE=true` no `zelo-api-cnp7`, abrir `/actuator/health` 1 min antes (acordar), e clicar "Recomeçar do zero" na /demo (o seed usa datas relativas ao dia em que foi carregado). Desligar o demo depois | gravação | equipe |

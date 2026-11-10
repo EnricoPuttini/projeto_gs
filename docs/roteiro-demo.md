@@ -4,8 +4,8 @@ Tudo sai da tela **/demo**: roteiro numerado à esquerda (cada passo diz o que o
 
 ## Checklist antes de gravar (5 minutos)
 
-1. Backend com `ZELO_DEMO_MODE=true` (no Render: variável de ambiente e redeploy). **Desligue depois**: com o demo ligado, qualquer pessoa com o link consegue resetar o banco.
-2. **Acorde o backend** (plano free do Render dorme e leva ~50 s): abra `https://SEU-API.onrender.com/actuator/health` e espere `{"status":"UP"}`.
+1. Backend com `ZELO_DEMO_MODE=true` (no Render: serviço `zelo-api-cnp7` → Environment → salvar; ele reinicia sozinho) (no Render: variável de ambiente e redeploy). **Desligue depois**: com o demo ligado, qualquer pessoa com o link consegue resetar o banco.
+2. **Acorde o backend** (plano free do Render dorme e leva ~50 s): abra `https://zelo-api-cnp7.onrender.com/actuator/health` e espere `{"status":"UP"}`.
 3. Abra `/demo` no **Chrome ou Edge** (Firefox não tem reconhecimento de voz), permita o microfone e deixe o som ligado.
 4. Clique em **Recomeçar do zero**. Isso recarrega o seed com datas de hoje; sem isso a "consulta de amanhã" pode não existir.
 5. Dê um clique em qualquer lugar da página (navegadores só liberam áudio depois de um toque).
