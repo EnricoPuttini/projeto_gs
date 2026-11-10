@@ -5,7 +5,7 @@ import { gsap, reduzirMovimento, ScrollTrigger } from './gsap'
  * Numero que conta ate o valor. Duas funcoes:
  * - apresentacao: conta de 0 quando entra na tela (uma vez);
  * - produto: quando o valor MUDA (ex.: vaga recuperada), interpola do anterior ao novo — o olho percebe a mudanca.
- * O texto final esta sempre no DOM via aria-label; leitor de tela nao ouve a contagem.
+ * O valor final fica sempre no DOM num texto sr-only; leitor de tela le o numero certo e nao ouve a contagem.
  */
 export function CountUp({
   valor,
@@ -53,8 +53,9 @@ export function CountUp({
   }, [valor, aoEntrarNaTela])
 
   return (
-    <span ref={ref} className={`tabular-nums ${className}`} aria-label={formatar(valor)}>
+    <span ref={ref} className={`tabular-nums ${className}`}>
       <span aria-hidden>{texto}</span>
+      <span className="sr-only">{formatar(valor)}</span>
     </span>
   )
 }

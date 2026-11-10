@@ -87,6 +87,7 @@ export function Hero() {
           </p>
           <RevealLinhas
             como="h1"
+            id="hero-titulo"
             imediato
             linhas={hero.titulo}
             className="mt-6 font-display text-display-xl font-semibold text-tinta"

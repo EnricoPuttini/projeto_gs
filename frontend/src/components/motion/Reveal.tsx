@@ -13,8 +13,11 @@ export function RevealLinhas({
   className = '',
   classeLinha = () => '',
   imediato = false,
+  id,
 }: {
   linhas: ReactNode[]
+  /** id do titulo: as secoes usam aria-labelledby apontando para ele */
+  id?: string
   como?: ElementType
   className?: string
   classeLinha?: (i: number) => string
@@ -37,7 +40,7 @@ export function RevealLinhas({
     { scope: ref },
   )
   return (
-    <Tag ref={ref} className={className}>
+    <Tag ref={ref} id={id} className={className}>
       {linhas.map((l, i) => (
         <span key={i} className="block overflow-hidden pb-[0.08em]">
           <span data-linha className={`block ${classeLinha(i)}`}>{l}</span>

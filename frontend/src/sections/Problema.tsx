@@ -96,7 +96,7 @@ export function Problema() {
       <div className="mx-auto grid w-full max-w-7xl items-center gap-12 px-4 lg:grid-cols-[1fr_1.15fr]">
         <div>
           <p className="text-sm font-bold uppercase tracking-[0.2em] text-alerta-escuro">O problema</p>
-          <RevealLinhas como="h2" linhas={[problema.titulo]} className="mt-3 font-display text-display-lg font-semibold text-tinta" />
+          <RevealLinhas como="h2" id="problema-titulo" linhas={[problema.titulo]} className="mt-3 font-display text-display-lg font-semibold text-tinta" />
           <p className="mt-5 max-w-lg text-lg leading-relaxed text-tinta/85">{problema.texto}</p>
           <dl className="mt-8 grid grid-cols-3 gap-4 border-t border-tinta/15 pt-6">
             {problema.numeros.map((n) => (

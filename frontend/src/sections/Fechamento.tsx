@@ -14,6 +14,7 @@ export function Fechamento() {
       <div className="relative mx-auto max-w-7xl px-4">
         <RevealLinhas
           como="h2"
+          id="fim-titulo"
           linhas={fechamento.frase}
           className="font-display text-display-xl font-semibold"
           classeLinha={(i) => (i === 1 ? 'italic text-ambar' : '')}

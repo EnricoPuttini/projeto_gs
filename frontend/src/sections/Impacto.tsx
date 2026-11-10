@@ -21,7 +21,7 @@ export function Impacto() {
     <section data-secao="Impacto" aria-labelledby="impacto-titulo" className="bg-papel py-24">
       <div className="mx-auto max-w-7xl px-4">
         <p className="text-sm font-bold uppercase tracking-[0.2em] text-petroleo">Impacto</p>
-        <RevealLinhas como="h2" linhas={[impacto.titulo]} className="mt-3 max-w-3xl font-display text-display-lg font-semibold text-tinta" />
+        <RevealLinhas como="h2" id="impacto-titulo" linhas={[impacto.titulo]} className="mt-3 max-w-3xl font-display text-display-lg font-semibold text-tinta" />
         <p className="mt-4 max-w-2xl text-lg text-tinta/85">{impacto.texto}</p>
         <dl className="mt-12 grid gap-px overflow-hidden rounded-3xl bg-tinta/10 ring-1 ring-tinta/10 sm:grid-cols-2 lg:grid-cols-4">
           {itens.map((x, n) => (

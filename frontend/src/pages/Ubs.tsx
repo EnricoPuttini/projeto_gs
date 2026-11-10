@@ -92,7 +92,8 @@ function Agenda({ consultas, hoje }: { consultas: ConsultaDetalhe[]; hoje: strin
   if (consultas.length === 0) return <Vazio>Nenhuma consulta para hoje ou amanhã.</Vazio>
   const dias = [...new Set(consultas.map((c) => diaDe(c.dataHora)))].sort()
   return (
-    <div className="relative overflow-x-auto">
+    // em tela estreita a agenda rola na horizontal: precisa ser alcancavel pelo teclado
+    <div className="relative overflow-x-auto" tabIndex={0} role="region" aria-label="Tabela da agenda (rolável)">
       <table className="w-full text-left text-base">
         <caption className="sr-only">Consultas de hoje e amanhã com situação e risco de falta</caption>
         <thead>

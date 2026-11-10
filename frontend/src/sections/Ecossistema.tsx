@@ -36,7 +36,7 @@ export function Ecossistema() {
     <section ref={ref} data-secao="Ecossistema" aria-labelledby="eco-titulo" className="bg-fundo py-24">
       <div className="mx-auto max-w-7xl px-4">
         <p className="text-sm font-bold uppercase tracking-[0.2em] text-petroleo">Ecossistema</p>
-        <RevealLinhas como="h2" linhas={[ecossistema.titulo]} className="mt-3 font-display text-display-lg font-semibold text-tinta" />
+        <RevealLinhas como="h2" id="eco-titulo" linhas={[ecossistema.titulo]} className="mt-3 font-display text-display-lg font-semibold text-tinta" />
 
         {/* desktop: diagrama de nos; celular: a mesma informacao como lista */}
         <div data-diagrama className="relative mt-12 hidden aspect-[16/8] md:block">
