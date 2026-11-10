@@ -48,3 +48,18 @@ export const IconeSeta = ({ className }: P) => (
 export const IconeCasa = ({ className }: P) => (
   <svg {...base(className)}><path d="M3 11 12 4l9 7M5 10v10h14V10" /><path d="M10 20v-6h4v6" /></svg>
 )
+export const IconePlay = ({ className }: P) => (
+  <svg {...base(className)}><circle cx="12" cy="12" r="9" /><path d="M10 8.5v7l6-3.5-6-3.5Z" /></svg>
+)
+export const IconeCelular = ({ className }: P) => (
+  <svg {...base(className)}><rect x="6" y="2.5" width="12" height="19" rx="2.5" /><path d="M10.5 18.5h3" /></svg>
+)
+export const IconePainel = ({ className }: P) => (
+  <svg {...base(className)}><rect x="3" y="4" width="18" height="16" rx="2" /><path d="M7 15v-3M11 15V9M15 15v-5M3 8h18" /></svg>
+)
+export const IconeAlfinete = ({ className }: P) => (
+  <svg {...base(className)}><path d="M9 3h6l-1 6 3 3v2H7v-2l3-3-1-6ZM12 14v7" /></svg>
+)
+export const IconeSetaEsq = ({ className }: P) => (
+  <svg {...base(className)}><path d="M19 12H5M11 6l-6 6 6 6" /></svg>
+)

@@ -103,6 +103,23 @@ export interface PainelUbs {
 export type Intensidade = 'SILENCIOSO' | 'VIBRAR' | 'ALARME'
 export type TipoLocal = 'CASA' | 'TRABALHO' | 'FAMILIA' | 'OUTRO'
 
+export interface AreaRisco {
+  id: number
+  nome: string
+  lat: number
+  lng: number
+  raioMetros: number
+  limiarMmHora: number
+}
+
+export interface Abrigo {
+  id: number
+  nome: string
+  endereco: string
+  lat: number
+  lng: number
+}
+
 export interface LocalSalvo {
   id: number
   apelido: string

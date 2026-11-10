@@ -47,8 +47,8 @@ const SUMARIO = [
 export default function ComoFunciona() {
   const pesos = FATORES.map((f) => ({ ...f, peso: BASE.modelo.pesos[f.chave] })).sort((a, b) => Math.abs(b.peso) - Math.abs(a.peso))
   return (
-    <Apresentacao>
-      <div className="mx-auto max-w-6xl px-4 pb-20 pt-28">
+    <Apresentacao setas>
+      <div className="mx-auto max-w-6xl px-4 pb-20 pt-10">
         <p className="text-sm font-bold uppercase tracking-[0.2em] text-petroleo">Como funciona</p>
         <RevealLinhas como="h1" imediato linhas={['O que cada dado significa', '— e como o Zelo decide.']} classeLinha={(i) => (i === 1 ? 'italic text-petroleo' : '')} className="mt-3 font-display text-display-lg font-semibold text-tinta" />
         <p className="mt-3 max-w-3xl text-lg text-tinta/85">
@@ -56,7 +56,7 @@ export default function ComoFunciona() {
         </p>
 
         <div className="mt-8 grid gap-8 lg:grid-cols-[15rem_1fr]">
-          <nav aria-label="Nesta página" className="lg:sticky lg:top-28 lg:self-start">
+          <nav aria-label="Nesta página" className="lg:sticky lg:top-8 lg:self-start">
             <p className="mb-2 text-sm font-bold uppercase tracking-wider text-tinta/70">Nesta página</p>
             <ul className="flex flex-wrap gap-2 lg:flex-col lg:gap-1">
               {SUMARIO.map(([id, t]) => (

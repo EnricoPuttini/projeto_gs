@@ -1,6 +1,8 @@
 import { api, post } from './cliente'
 import type {
+  Abrigo,
   AlertaDetalhe,
+  AreaRisco,
   LocalRequest,
   LocalSalvo,
   Mensagem,
@@ -36,3 +38,5 @@ export const demoCancelarConsulta = () => post<unknown>('/demo/cancelar-consulta
 export const demoChuva = (areaId = 1) => post<{ alertasCriados: number }>(`/demo/chuva?areaId=${areaId}`)
 export const demoAvancarRelogio = (minutos = 15) => post<{ agora: string }>(`/demo/avancar-relogio?minutos=${minutos}`)
 export const demoResetar = () => post<unknown>('/demo/resetar')
+export const listarAreasRisco = () => api<AreaRisco[]>('/areas-risco')
+export const listarAbrigos = () => api<Abrigo[]>('/abrigos')

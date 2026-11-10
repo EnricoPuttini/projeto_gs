@@ -9,8 +9,10 @@ import { IconeEnviar, IconeMic, IconeSeta, IconeSom } from '../components/Icones
 import { LetraGrande } from '../components/LetraGrande'
 import { MeusLocais } from '../components/MeusLocais'
 import { confete } from '../components/motion/Confetti'
+import { MenuLateral } from '../components/MenuLateral'
+import { MolduraCelular } from '../components/MolduraCelular'
 import { OfertaCard } from '../components/OfertaCard'
-import { avisarVagaAceita } from '../eventos'
+import { avisarSeguro, avisarVagaAceita } from '../eventos'
 import { useNovos } from '../hooks/useNovos'
 import { usePolling } from '../hooks/usePolling'
 import { usePreferencia } from '../hooks/usePreferencia'
@@ -53,6 +55,8 @@ export default function Cidadao({ embutido = false }: { embutido?: boolean }) {
         confete(fim.current)
         avisarVagaAceita()
       }
+      // "estou seguro" por VOZ: o backend responde "Que bom, <nome>! Avisei..." quando havia alerta aberto.
+      if (resposta.resposta.startsWith('Que bom,') && resposta.resposta.includes('Avisei')) avisarSeguro()
     } catch (e) {
       setErroEnvio(e instanceof ApiError ? e.message : 'Não consegui enviar. Tente de novo.')
       setTexto(limpo) // devolve o texto para a pessoa nao ter que digitar tudo outra vez
@@ -93,10 +97,9 @@ export default function Cidadao({ embutido = false }: { embutido?: boolean }) {
   const alerta = alertas.dados?.[0]
   const nome = paciente.dados?.nome.split(' ')[0] ?? ''
 
-  // Embutido (/demo), quem fornece o <main> e a pagina; sozinho, este componente e a propria pagina.
-  const Raiz = embutido ? 'div' : 'main'
-  return (
-    <Raiz className={`relative mx-auto flex flex-col bg-[#e6efe9] ${embutido ? 'h-full' : 'h-dvh max-w-md'}`}>
+  // O <main> e da pagina (ou da /demo, quando embutido); o app em si e sempre uma div.
+  const app = (
+    <div className={`relative mx-auto flex flex-col bg-[#e6efe9] ${embutido ? 'h-full' : 'h-dvh max-w-md lg:h-full lg:max-w-none'}`}>
       <header className="flex items-center justify-between gap-2 bg-petroleo px-4 py-3 text-white">
         <div className="flex items-center gap-3">
           {!embutido && (
@@ -292,7 +295,27 @@ export default function Cidadao({ embutido = false }: { embutido?: boolean }) {
       </>
       )}
 
-      {alerta && <AlertaTelaCheia alerta={alerta} embutido={embutido} aoConfirmar={() => { alertas.atualizar(); mensagens.atualizar() }} />}
-    </Raiz>
+      {alerta && <AlertaTelaCheia alerta={alerta} embutido aoConfirmar={() => { alertas.atualizar(); mensagens.atualizar() }} />}
+    </div>
+  )
+
+  if (embutido) return app
+  // Desktop: o app aparece dentro do celular, com uma frase ao lado; no celular de verdade, tela cheia.
+  return (
+    <MenuLateral aPartirDeLg semMenuInferior>
+    <main className="lg:flex lg:min-h-dvh lg:items-center lg:justify-center lg:gap-16 lg:bg-fundo lg:p-8">
+      <div className="hidden max-w-sm lg:block">
+        <p className="text-sm font-bold uppercase tracking-[0.2em] text-petroleo">App do cidadão</p>
+        <h2 className="mt-2 font-display text-display-md font-semibold text-tinta">Este é o Zelo no celular da Dona Cida.</h2>
+        <p className="mt-3 text-lg text-tinta/85">
+          É o mesmo app que ela usa: fale pelo microfone ou escreva. Experimente dizer "minha consulta".
+        </p>
+        <Link to="/demo" className="mt-5 inline-flex min-h-12 items-center gap-2 rounded-full bg-petroleo px-5 text-base font-bold text-white">
+          Ver a demonstração completa <IconeSeta className="size-5" />
+        </Link>
+      </div>
+      <MolduraCelular>{app}</MolduraCelular>
+    </main>
+    </MenuLateral>
   )
 }

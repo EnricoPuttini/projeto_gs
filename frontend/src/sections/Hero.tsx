@@ -77,7 +77,7 @@ export function Hero() {
   )
 
   return (
-    <section ref={ref} data-secao="Início" aria-labelledby="hero-titulo" className="relative overflow-hidden bg-papel pt-24">
+    <section ref={ref} data-secao="Início" aria-labelledby="hero-titulo" className="relative overflow-hidden bg-papel pt-4 md:pt-10">
       {/* (havia aqui uma grade quadriculada com mascara radial: cortada — custava ~800 ms de bloqueio no celular, ver docs/design.md) */}
       <div className="relative mx-auto grid max-w-7xl items-center gap-12 px-4 pb-20 pt-10 lg:grid-cols-[1.35fr_1fr] lg:pb-28 lg:pt-16">
         <div>
