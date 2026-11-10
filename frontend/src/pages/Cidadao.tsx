@@ -103,7 +103,7 @@ export default function Cidadao({ embutido = false }: { embutido?: boolean }) {
       <header className="flex items-center justify-between gap-2 bg-petroleo px-4 py-3 text-white">
         <div className="flex items-center gap-3">
           {!embutido && (
-            <Link to="/" aria-label="Voltar ao site do Zelo" className="flex size-11 items-center justify-center rounded-full text-white hover:bg-white/10">
+            <Link to="/" aria-label="Voltar ao site do Zelo" className="flex size-12 items-center justify-center rounded-full text-white hover:bg-white/10">
               <IconeSeta className="size-6 rotate-180" />
             </Link>
           )}
