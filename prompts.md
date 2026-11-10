@@ -20,3 +20,6 @@ Pedi revisão de segurança (segredos, dependências, cabeçalhos, CORS) e audit
 
 ## M5 — Dados reais e redesenho
 Pedi dados reais (Kaggle) e um site mais bonito e autoexplicativo. A IA baixou a base pública "Medical Appointment No Shows", treinou a regressão logística (AUC 0,674) substituindo os coeficientes provisórios, calibrou o seed com as taxas reais e redesenhou o site: página inicial com o problema e a solução, página "Como funciona" explicando cada dado, painel com explicações e demo guiada por passos.
+
+## M5 — Redesign "inesquecível"
+Pedi um redesign cinematográfico nas páginas de apresentação e calmo no produto, com GSAP/ScrollTrigger, Lenis, Fraunces, storytelling em 9 seções e metas de axe 0 violações e Lighthouse mobile ≥ 90. A IA escreveu `docs/design.md`, implementou seção por seção conferindo prints em 390 e 1440 px, e otimizou por experimento (cortou a grade decorativa do hero, desligou o Lenis no toque, montou as seções progressivamente): Performance mediana 92, Acessibilidade 100.

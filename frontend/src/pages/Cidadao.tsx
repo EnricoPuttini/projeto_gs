@@ -8,7 +8,10 @@ import { Carregando, Erro } from '../components/Estados'
 import { IconeEnviar, IconeMic, IconeSeta, IconeSom } from '../components/Icones'
 import { LetraGrande } from '../components/LetraGrande'
 import { MeusLocais } from '../components/MeusLocais'
+import { confete } from '../components/motion/Confetti'
 import { OfertaCard } from '../components/OfertaCard'
+import { avisarVagaAceita } from '../eventos'
+import { useNovos } from '../hooks/useNovos'
 import { usePolling } from '../hooks/usePolling'
 import { usePreferencia } from '../hooks/usePreferencia'
 import { useFala } from '../voice/useFala'
@@ -45,6 +48,11 @@ export default function Cidadao({ embutido = false }: { embutido?: boolean }) {
     try {
       const resposta = await enviarMensagem(pacienteId, limpo)
       setAcoes(resposta.acoes)
+      // Aceite por VOZ: o backend so responde "Pronto, <nome>!" quando a vaga foi aceita (AssistenteBO.aceitarOferta).
+      if (resposta.resposta.startsWith('Pronto,')) {
+        confete(fim.current)
+        avisarVagaAceita()
+      }
     } catch (e) {
       setErroEnvio(e instanceof ApiError ? e.message : 'Não consegui enviar. Tente de novo.')
       setTexto(limpo) // devolve o texto para a pessoa nao ter que digitar tudo outra vez
@@ -58,6 +66,9 @@ export default function Cidadao({ embutido = false }: { embutido?: boolean }) {
   const voz = useReconhecimento((falado) => void enviar(falado))
 
   const lista = useMemo(() => mensagens.dados ?? [], [mensagens.dados])
+  const ids = useMemo(() => mensagens.dados?.map((m) => m.id), [mensagens.dados])
+  // mensagem que chega com a tela aberta entra deslizando; o historico antigo aparece parado
+  const novas = useNovos(ids)
 
   // Le em voz alta so o que chega DEPOIS de abrir a tela (o historico antigo nao deve ser narrado).
   useEffect(() => {
@@ -137,7 +148,15 @@ export default function Cidadao({ embutido = false }: { embutido?: boolean }) {
       ) : (
       <>
       <section className="flex-1 space-y-3 overflow-y-auto p-3" aria-live="polite" aria-label="Conversa">
-        {mensagens.carregando && <Carregando texto="Abrindo a conversa…" />}
+        {mensagens.carregando && (
+          // skeleton: o formato da conversa aparece antes dos dados (a tela nunca fica em branco)
+          <div role="status" className="space-y-3">
+            <span className="sr-only">Abrindo a conversa…</span>
+            <div aria-hidden className="esqueleto h-16 w-3/4" />
+            <div aria-hidden className="esqueleto ml-auto h-10 w-1/2" />
+            <div aria-hidden className="esqueleto h-20 w-4/5" />
+          </div>
+        )}
         {mensagens.erro && !mensagens.dados && <Erro mensagem={mensagens.erro} aoTentar={mensagens.atualizar} />}
         {mensagens.dados && lista.length === 0 && (
           <div className="rounded-2xl bg-white p-4 shadow-sm">
@@ -158,7 +177,7 @@ export default function Cidadao({ embutido = false }: { embutido?: boolean }) {
         )}
 
         {lista.map((m) => (
-          <div key={m.id} className={`flex ${m.direcao === 'ENTRADA' ? 'justify-end' : 'justify-start'}`}>
+          <div key={m.id} className={`flex ${m.direcao === 'ENTRADA' ? 'justify-end' : 'justify-start'} ${novas.has(m.id) ? 'animate-chegar' : ''}`}>
             <div
               className={`max-w-[85%] rounded-2xl px-4 py-2 text-lg leading-snug shadow-sm ${
                 m.direcao === 'ENTRADA' ? 'rounded-br-sm bg-[#d4efc9]' : 'rounded-bl-sm bg-white'

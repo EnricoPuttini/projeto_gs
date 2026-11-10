@@ -1,14 +1,16 @@
-import { useEffect, useState } from 'react'
+import { useEffect, useMemo, useState } from 'react'
 import type { ReactNode } from 'react'
 import { Link, useSearchParams } from 'react-router-dom'
 import { listarUbs, painelUbs } from '../api/endpoints'
 import { diaDe, formatarHora, mmss } from '../api/formato'
 import type { ConsultaDetalhe, ConsultaStatus, FilaDetalhe, OfertaDetalhe, PainelUbs } from '../api/tipos'
-import { Carregando, Erro, Vazio } from '../components/Estados'
+import { Erro, Vazio } from '../components/Estados'
 import { IconeAmpulheta, IconeCalendario, IconeChuva, IconeFila, IconeOferta, IconePresenca } from '../components/Icones'
 import { Info } from '../components/Info'
 import { Layout } from '../components/Layout'
 import { LetraGrande } from '../components/LetraGrande'
+import { CountUp } from '../components/motion/CountUp'
+import { useNovos } from '../hooks/useNovos'
 import { LIMIAR_ALTO, pct } from '../dados/base'
 import { useContagem } from '../hooks/useContagem'
 import { usePolling } from '../hooks/usePolling'
@@ -33,7 +35,7 @@ function Cartao({ titulo, subtitulo, icone, children, className = '', acao }: {
   titulo: string; subtitulo?: string; icone?: ReactNode; children: ReactNode; className?: string; acao?: ReactNode
 }) {
   return (
-    <section aria-label={titulo} className={`rounded-2xl bg-white p-5 shadow-sm ring-1 ring-petroleo/10 ${className}`}>
+    <section aria-label={titulo} className={`min-w-0 rounded-2xl bg-white p-5 shadow-sm ring-1 ring-petroleo/10 ${className}`}>
       <div className="mb-3 flex items-start justify-between gap-3">
         <div className="flex items-start gap-3">
           {icone && <span className="mt-0.5 flex size-10 shrink-0 items-center justify-center rounded-xl bg-fundo text-petroleo">{icone}</span>}
@@ -50,7 +52,7 @@ function Cartao({ titulo, subtitulo, icone, children, className = '', acao }: {
 }
 
 function Indicador({ icone, rotulo, valor, explicacao, detalhe }: {
-  icone: ReactNode; rotulo: string; valor: string; explicacao: string; detalhe: ReactNode
+  icone: ReactNode; rotulo: string; valor: ReactNode; explicacao: string; detalhe: ReactNode
 }) {
   return (
     <div className="rounded-2xl bg-white p-5 shadow-sm ring-1 ring-petroleo/10">
@@ -85,10 +87,13 @@ const Etiqueta = ({ children, cor }: { children: ReactNode; cor: string }) => (
 )
 
 function Agenda({ consultas, hoje }: { consultas: ConsultaDetalhe[]; hoje: string }) {
+  // encaixe que acabou de nascer pisca em ambar por 2 s: a recepcao percebe sem procurar
+  const novas = useNovos(useMemo(() => consultas.map((c) => c.id), [consultas]))
   if (consultas.length === 0) return <Vazio>Nenhuma consulta para hoje ou amanhã.</Vazio>
   const dias = [...new Set(consultas.map((c) => diaDe(c.dataHora)))].sort()
   return (
-    <div className="overflow-x-auto">
+    // em tela estreita a agenda rola na horizontal: precisa ser alcancavel pelo teclado
+    <div className="relative overflow-x-auto" tabIndex={0} role="region" aria-label="Tabela da agenda (rolável)">
       <table className="w-full text-left text-base">
         <caption className="sr-only">Consultas de hoje e amanhã com situação e risco de falta</caption>
         <thead>
@@ -108,7 +113,7 @@ function Agenda({ consultas, hoje }: { consultas: ConsultaDetalhe[]; hoje: strin
               </th>
             </tr>
             {consultas.filter((c) => diaDe(c.dataHora) === dia).map((c) => (
-              <tr key={c.id} className={`border-b border-petroleo/10 ${c.origem === 'ENCAIXE' ? 'bg-ambar/10' : ''}`}>
+              <tr key={c.id} className={`border-b border-petroleo/10 ${novas.has(c.id) ? 'animate-destaque' : c.origem === 'ENCAIXE' ? 'bg-ambar/10' : ''}`}>
                 <td className="py-2.5 pr-3 font-bold tabular-nums">{formatarHora(c.dataHora)}</td>
                 <td className="pr-3">
                   <span className={c.status === 'CANCELADA' ? 'text-tinta/60' : ''}>{c.pacienteNome}</span>
@@ -146,10 +151,11 @@ function OfertaLinha({ oferta }: { oferta: OfertaDetalhe }) {
 }
 
 function Fila({ fila }: { fila: FilaDetalhe[] }) {
+  const novas = useNovos(useMemo(() => fila.map((f) => f.id), [fila]))
   if (fila.length === 0) return <Vazio>Ninguém na fila.</Vazio>
   const especialidades = [...new Set(fila.map((f) => f.especialidade))]
   return (
-    <div className="max-h-[28rem] overflow-auto" tabIndex={0} role="region" aria-label="Lista da fila de espera">
+    <div className="relative max-h-[28rem] overflow-auto" tabIndex={0} role="region" aria-label="Lista da fila de espera">
       <table className="w-full text-left text-base">
         <caption className="sr-only">Fila de espera por especialidade, na ordem em que as vagas são oferecidas</caption>
         <thead className="sticky top-0 bg-white">
@@ -166,7 +172,7 @@ function Fila({ fila }: { fila: FilaDetalhe[] }) {
               <th colSpan={4} scope="colgroup" className="bg-fundo px-3 py-1.5 text-sm font-bold text-petroleo">{esp}</th>
             </tr>
             {fila.filter((f) => f.especialidade === esp).map((f) => (
-              <tr key={f.id} className={`border-b border-petroleo/10 ${f.posicao === 1 ? 'bg-petroleo/5' : ''}`}>
+              <tr key={f.id} className={`border-b border-petroleo/10 ${novas.has(f.id) ? 'animate-destaque' : f.posicao === 1 ? 'bg-petroleo/5' : ''}`}>
                 <td className="py-2.5 pr-3 font-extrabold tabular-nums">{f.posicao}º</td>
                 <td className="pr-3">
                   {f.pacienteNome}
@@ -192,16 +198,16 @@ function Conteudo({ painel }: { painel: PainelUbs }) {
     // @container: o layout segue a largura do proprio painel (inteiro na pagina, estreito dentro da /demo).
     <div className="@container space-y-5">
       <div className="grid grid-cols-1 gap-4 @lg:grid-cols-2 @6xl:grid-cols-4">
-        <Indicador icone={<IconeCalendario />} rotulo="Vagas recuperadas" valor={String(impacto.vagasRecuperadas)}
+        <Indicador icone={<IconeCalendario />} rotulo="Vagas recuperadas" valor={<CountUp valor={impacto.vagasRecuperadas} />}
           explicacao="consultas que ficariam vazias e foram para alguém da fila"
           detalhe="Conta as vagas liberadas (cancelamento ou falta de resposta) que viraram consulta de encaixe." />
-        <Indicador icone={<IconeAmpulheta />} rotulo="Dias de espera economizados" valor={String(impacto.diasEsperaEconomizados)}
+        <Indicador icone={<IconeAmpulheta />} rotulo="Dias de espera economizados" valor={<CountUp valor={impacto.diasEsperaEconomizados} />}
           explicacao="tempo de fila que as pessoas encaixadas deixaram de esperar"
           detalhe="Para cada encaixe: espera típica por uma vaga regular (45 dias, premissa ajustável) menos os dias até a consulta encaixada. Somado para todos." />
-        <Indicador icone={<IconePresenca />} rotulo="Taxa de comparecimento" valor={temTaxa ? pct(impacto.taxaComparecimento!, 0) : '—'}
+        <Indicador icone={<IconePresenca />} rotulo="Taxa de comparecimento" valor={temTaxa ? <CountUp valor={impacto.taxaComparecimento! * 100} formatar={(v) => `${Math.round(v)}%`} /> : '—'}
           explicacao={temTaxa ? `${impacto.consultasRealizadas} compareceram, ${impacto.faltas} faltaram` : 'aparece quando houver consultas encerradas'}
           detalhe="Consultas realizadas ÷ (realizadas + faltas). Mostra se os lembretes e encaixes estão enchendo as cadeiras." />
-        <Indicador icone={<IconeChuva />} rotulo="Moradores alertados" valor={String(impacto.moradoresAlertados)}
+        <Indicador icone={<IconeChuva />} rotulo="Moradores alertados" valor={<CountUp valor={impacto.moradoresAlertados} />}
           explicacao="pessoas avisadas antes da chuva forte chegar"
           detalhe="Moradores diferentes que receberam ao menos um alerta de enchente para algum dos seus locais salvos." />
       </div>
@@ -217,7 +223,7 @@ function Conteudo({ painel }: { painel: PainelUbs }) {
           <Agenda consultas={painel.agenda} hoje={painel.agora.slice(0, 10)} />
         </Cartao>
 
-        <div className="space-y-5">
+        <div className="min-w-0 space-y-5">
           <Cartao titulo="Ofertas em andamento" subtitulo="Vagas oferecidas agora; cada pessoa tem 15 minutos para responder." icone={<IconeOferta />}>
             {painel.ofertas.length === 0 ? (
               <Vazio>Nenhuma oferta agora. Quando alguém desmarcar, ela aparece aqui.</Vazio>
@@ -267,9 +273,9 @@ export default function Ubs({ embutido = false }: { embutido?: boolean }) {
   }, [painel.dados])
 
   const seletor = (
-    <label className="flex items-center gap-2 text-base font-semibold">
+    <label className="flex min-w-0 max-w-full flex-wrap items-center gap-2 text-base font-semibold">
       Unidade
-      <select value={ubsId} onChange={(e) => setParams({ ubs: e.target.value })} className="min-h-11 rounded-lg border border-petroleo/20 bg-white px-3 text-base text-tinta">
+      <select value={ubsId} onChange={(e) => setParams({ ubs: e.target.value })} className="min-h-11 min-w-0 max-w-full rounded-lg border border-petroleo/20 bg-white px-3 text-base text-tinta">
         {(unidades.dados ?? [{ id: ubsId, nome: `UBS ${ubsId}`, endereco: '' }]).map((u) => (
           <option key={u.id} value={u.id}>{u.nome}</option>
         ))}
@@ -284,7 +290,16 @@ export default function Ubs({ embutido = false }: { embutido?: boolean }) {
   )
   const corpo = (
     <>
-      {painel.carregando && <Carregando texto="Carregando o painel…" />}
+      {painel.carregando && (
+        // skeleton com o desenho do painel: a pessoa ja sabe onde cada coisa vai aparecer
+        <div role="status" className="space-y-5">
+          <span className="sr-only">Carregando o painel…</span>
+          <div aria-hidden className="grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
+            {[0, 1, 2, 3].map((i) => <div key={i} className="esqueleto h-36" />)}
+          </div>
+          <div aria-hidden className="esqueleto h-96" />
+        </div>
+      )}
       {painel.erro && <div className="mb-4"><Erro mensagem={painel.erro} aoTentar={painel.atualizar} /></div>}
       {painel.dados && <Conteudo painel={painel.dados} />}
     </>
@@ -316,7 +331,7 @@ export default function Ubs({ embutido = false }: { embutido?: boolean }) {
             </p>
             {status}
           </div>
-          <div className="flex items-center gap-3">
+          <div className="flex min-w-0 max-w-full flex-wrap items-center gap-3">
             {seletor}
             <span className="sm:hidden"><LetraGrande /></span>
           </div>

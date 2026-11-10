@@ -1,16 +1,60 @@
 @import '@fontsource-variable/figtree';
+@import '@fontsource-variable/fraunces';
 @import 'tailwindcss';
 
 @theme {
   --color-petroleo: #0f5c57;
   --color-petroleo-escuro: #0a403c;
+  /* secoes escuras: verde quase preto derivado da marca */
+  --color-noite: #0b2422;
   --color-ambar: #f2b84b;
+  /* so para perigo: enchente, risco alto, tempo acabando */
   --color-alerta: #c2410c;
   /* texto de alerta sobre fundo claro/tingido: o #c2410c nao atinge AA ali */
   --color-alerta-escuro: #9a3412;
   --color-fundo: #eef3f1;
-  --color-tinta: #14302e;
+  --color-papel: #fbfaf6;
+  --color-tinta: #17211f;
+
   --font-sans: 'Figtree Variable', system-ui, sans-serif;
+  /* display serifada so nas paginas de apresentacao; o produto usa apenas Figtree */
+  --font-display: 'Fraunces Variable', Georgia, serif;
+
+  /* escala fluida: cresce com a tela sem saltos entre breakpoints */
+  --text-display-xl: clamp(2.4rem, 3.2vw + 1rem, 4.6rem);
+  --text-display-xl--line-height: 1.02;
+  --text-display-lg: clamp(2.1rem, 3.4vw + 1rem, 4rem);
+  --text-display-lg--line-height: 1.06;
+  --text-display-md: clamp(1.7rem, 1.8vw + 1rem, 2.75rem);
+  --text-display-md--line-height: 1.12;
+
+  /* backwards (nao both): depois de terminar a animacao nao pode deixar transform aplicado, senao o wrapper
+     vira referencia de position:fixed e quebra a navegacao fixa e os pins do ScrollTrigger */
+  --animate-entrar: entrar 400ms cubic-bezier(0.2, 0.7, 0.2, 1) backwards;
+  --animate-entrar-rapido: entrar 240ms ease-out backwards;
+  --animate-chegar: chegar 360ms cubic-bezier(0.2, 0.8, 0.2, 1) both;
+  --animate-destaque: destaque 2s ease-out both;
+  --animate-respirar: respirar 3.2s ease-in-out infinite;
+
+  @keyframes entrar {
+    from { opacity: 0; transform: translateY(16px); }
+    to { opacity: 1; transform: none; }
+  }
+  /* mensagem nova no chat: desliza de baixo e cresce. Sem opacidade de proposito: o texto nunca fica
+     translucido (contraste AA o tempo todo, mesmo no meio da animacao) */
+  @keyframes chegar {
+    from { transform: translateY(14px) scale(0.94); }
+    to { transform: none; }
+  }
+  /* logo: "batimento" lento e discreto */
+  @keyframes respirar {
+    50% { transform: scale(1.07); }
+  }
+  /* linha nova na fila/agenda: fundo ambar que esmaece em 2 s */
+  @keyframes destaque {
+    from { background-color: rgb(242 184 75 / 0.45); }
+    to { background-color: transparent; }
+  }
 }
 
 html {
@@ -26,6 +70,12 @@ body {
   background: var(--color-fundo);
   color: var(--color-tinta);
   font-family: var(--font-sans);
+  overflow-x: hidden;
+}
+
+.font-display {
+  font-variation-settings: 'opsz' 144, 'SOFT' 50;
+  letter-spacing: -0.02em;
 }
 
 /* Foco sempre visivel, com contraste tanto em fundo claro quanto escuro. */
@@ -35,9 +85,35 @@ body {
   box-shadow: 0 0 0 6px var(--color-ambar);
 }
 
+/* Lenis: precisa destas regras para o scroll suave nao brigar com o nativo. */
+html.lenis,
+html.lenis body {
+  height: auto;
+}
+.lenis.lenis-smooth {
+  scroll-behavior: auto !important;
+}
+.lenis.lenis-stopped {
+  overflow: hidden;
+}
+
+/* Skeleton do carregamento (produto): pulso discreto de opacidade. */
+.esqueleto {
+  border-radius: 0.75rem;
+  background: rgb(15 92 87 / 0.08);
+  animation: pulsar 1.4s ease-in-out infinite;
+}
+@keyframes pulsar {
+  50% { opacity: 0.5; }
+}
+
 @media (prefers-reduced-motion: reduce) {
-  * {
+  *,
+  *::before,
+  *::after {
     animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
     transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
   }
 }
