@@ -34,7 +34,7 @@ export function MarcaViva({ claro = false }: { claro?: boolean }) {
  * cursor, navegacao que fica solida ao rolar e mostra em que secao a pessoa esta.
  * Secoes marcam-se com data-secao="Nome" para aparecer no indicador.
  */
-export function Apresentacao({ children, largo = false }: { children: ReactNode; largo?: boolean }) {
+export function Apresentacao({ children, largo = false, suave = true }: { children: ReactNode; largo?: boolean; suave?: boolean }) {
   const [rolou, setRolou] = useState(false)
   const [secao, setSecao] = useState<string | null>(null)
   const [menuAberto, setMenuAberto] = useState(false)
@@ -67,7 +67,8 @@ export function Apresentacao({ children, largo = false }: { children: ReactNode;
   const largura = largo ? 'max-w-[1600px]' : 'max-w-7xl'
   return (
     <div className="flex min-h-dvh flex-col bg-papel">
-      <SmoothScroll />
+      {/* suave=false nas telas de produto (ex.: /demo): o Lenis captura a roda do mouse e travava os paineis internos */}
+      {suave && <SmoothScroll />}
       <Cursor />
       <a href="#conteudo" className="sr-only focus:not-sr-only focus:fixed focus:left-4 focus:top-4 focus:z-[60] focus:rounded-lg focus:bg-ambar focus:px-4 focus:py-2 focus:font-bold">
         Pular para o conteúdo
