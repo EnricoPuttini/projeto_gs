@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react'
 import { ApiError } from '../api/cliente'
 import { confirmarSeguro } from '../api/endpoints'
 import type { AlertaDetalhe } from '../api/tipos'
+import { avisarSeguro } from '../eventos'
 import { useAlarme } from '../hooks/useAlarme'
 import { useFala } from '../voice/useFala'
 
@@ -36,6 +37,7 @@ export function AlertaTelaCheia({
     setErro(null)
     try {
       await confirmarSeguro(alerta.id)
+      avisarSeguro()
       fala.parar()
       aoConfirmar()
     } catch (e) {
