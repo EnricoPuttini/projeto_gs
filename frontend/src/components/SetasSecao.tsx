@@ -14,13 +14,25 @@ export function SetasSecao() {
   const [secoes, setSecoes] = useState<HTMLElement[]>([])
   const [atual, setAtual] = useState(0)
 
-  // lista de secoes: atualiza quando a pagina ganha conteudo novo
+  // lista de secoes: atualiza quando a pagina ganha conteudo novo (na Inicio as secoes montam aos poucos).
+  // Performance: o DOM muda muito (chat do hero, contagens); a leitura e agrupada por quadro e so vira
+  // estado novo se a lista de secoes mudou de fato (medido: sem isso o TBT subia ~250 ms no celular).
   useEffect(() => {
-    const ler = () => setSecoes([...document.querySelectorAll<HTMLElement>('[data-secao]')])
+    let quadro = 0
+    const ler = () => {
+      cancelAnimationFrame(quadro)
+      quadro = requestAnimationFrame(() => {
+        const novas = [...document.querySelectorAll<HTMLElement>('[data-secao]')]
+        setSecoes((antes) => (antes.length === novas.length && antes.every((el, i) => el === novas[i]) ? antes : novas))
+      })
+    }
     ler()
     const obs = new MutationObserver(ler)
     obs.observe(document.getElementById('conteudo') ?? document.body, { childList: true, subtree: true })
-    return () => obs.disconnect()
+    return () => {
+      cancelAnimationFrame(quadro)
+      obs.disconnect()
+    }
   }, [])
 
   // secao atual = a que cruza o meio da tela
