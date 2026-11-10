@@ -47,7 +47,8 @@ export function Apresentacao({ children, largo = false }: { children: ReactNode;
       // progresso via transform (barato para o navegador), nunca width
       if (barra.current) barra.current.style.transform = `scaleX(${total > 0 ? window.scrollY / total : 0})`
     }
-    aoRolar()
+    // primeira leitura de layout no proximo quadro: evita reflow forcado durante a montagem
+    const primeiro = requestAnimationFrame(aoRolar)
     window.addEventListener('scroll', aoRolar, { passive: true })
 
     // secao ativa = a que cruza a linha do meio da tela
@@ -57,6 +58,7 @@ export function Apresentacao({ children, largo = false }: { children: ReactNode;
     )
     document.querySelectorAll<HTMLElement>('[data-secao]').forEach((s) => obs.observe(s))
     return () => {
+      cancelAnimationFrame(primeiro)
       window.removeEventListener('scroll', aoRolar)
       obs.disconnect()
     }

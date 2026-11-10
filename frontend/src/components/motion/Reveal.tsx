@@ -30,10 +30,9 @@ export function RevealLinhas({
       if (reduzirMovimento()) return
       gsap.from(ref.current!.querySelectorAll('[data-linha]'), {
         yPercent: 110,
-        duration: 1,
+        duration: imediato ? 0.75 : 1,
         ease: 'power4.out',
-        stagger: 0.12,
-        delay: imediato ? 0.15 : 0,
+        stagger: imediato ? 0.08 : 0.12,
         scrollTrigger: imediato ? undefined : { trigger: ref.current, start: 'top 85%', once: true },
       })
     },

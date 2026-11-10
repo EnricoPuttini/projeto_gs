@@ -119,7 +119,8 @@ export function Enchente() {
       }
       gsap.set(passos, { opacity: 0.6 }) // 0.6 sobre o fundo escuro ainda passa AA
       gsap.set('[data-alerta]', { autoAlpha: 0, y: 24 })
-      gsap.to('[data-pulso]', { attr: { r: 112 }, opacity: 0.05, duration: 1.4, repeat: -1, ease: 'sine.out' })
+      // pulso infinito so roda com a secao na tela (fora dela e CPU desperdicada)
+      gsap.to('[data-pulso]', { attr: { r: 112 }, opacity: 0.05, duration: 1.4, repeat: -1, ease: 'sine.out', scrollTrigger: { trigger: ref.current, toggleActions: 'play pause resume pause' } })
 
       // a historia avanca com o scroll: chove, a area acende, o alerta chega, a rota aparece
       const tl = gsap.timeline({ scrollTrigger: { trigger: ref.current, start: 'top 65%', end: 'bottom 75%', scrub: 0.8 } })

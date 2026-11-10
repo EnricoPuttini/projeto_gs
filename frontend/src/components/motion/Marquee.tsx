@@ -11,7 +11,7 @@ export function Marquee({ itens, className = '' }: { itens: string[]; className?
     () => {
       if (reduzirMovimento()) return
       const trilho = ref.current!.querySelector('[data-trilho]')
-      const anim = gsap.to(trilho, { xPercent: -50, ease: 'none', duration: 28, repeat: -1 })
+      const anim = gsap.to(trilho, { xPercent: -50, ease: 'none', duration: 28, repeat: -1, scrollTrigger: { trigger: ref.current, toggleActions: 'play pause resume pause' } })
       const devagar = () => gsap.to(anim, { timeScale: 0.25, duration: 0.6 })
       const normal = () => gsap.to(anim, { timeScale: 1, duration: 0.6 })
       ref.current!.addEventListener('pointerenter', devagar)
