@@ -192,7 +192,7 @@ export function MeusLocais({ pacienteId }: { pacienteId: number }) {
   }
 
   return (
-    <section aria-label="Meus locais" className="flex-1 space-y-3 overflow-y-auto p-3">
+    <section aria-label="Meus locais" className="flex-1 space-y-3 overflow-y-auto p-3" data-lenis-prevent>
       <p className="text-lg">Escolha onde você quer ser avisado quando a chuva forte estiver chegando.</p>
       {locais.carregando && <Carregando texto="Buscando seus locais…" />}
       {locais.erro && !locais.dados && <Erro mensagem={locais.erro} aoTentar={locais.atualizar} />}

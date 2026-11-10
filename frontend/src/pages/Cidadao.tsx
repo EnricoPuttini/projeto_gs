@@ -147,7 +147,7 @@ export default function Cidadao({ embutido = false }: { embutido?: boolean }) {
         <MeusLocais pacienteId={pacienteId} />
       ) : (
       <>
-      <section className="flex-1 space-y-3 overflow-y-auto p-3" aria-live="polite" aria-label="Conversa">
+      <section className="flex-1 space-y-3 overflow-y-auto p-3" data-lenis-prevent aria-live="polite" aria-label="Conversa">
         {mensagens.carregando && (
           // skeleton: o formato da conversa aparece antes dos dados (a tela nunca fica em branco)
           <div role="status" className="space-y-3">

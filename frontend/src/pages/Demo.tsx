@@ -183,5 +183,6 @@ export default function Demo() {
       </div>
     )
 
-  return <Apresentacao largo>{conteudo}</Apresentacao>
+  // /demo e tela de PRODUTO (celular + painel): sem Lenis, a roda do mouse rola cada painel normalmente
+  return <Apresentacao largo suave={false}>{conteudo}</Apresentacao>
 }

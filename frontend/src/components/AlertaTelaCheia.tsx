@@ -50,6 +50,7 @@ export function AlertaTelaCheia({
       role="alertdialog"
       aria-modal="true"
       aria-labelledby="alerta-titulo"
+      data-lenis-prevent
       className={`${embutido ? 'absolute' : 'fixed'} inset-0 z-50 flex flex-col overflow-y-auto bg-alerta p-5 text-white`}
     >
       <p className="text-lg font-bold uppercase tracking-wide">{ROTULO_NIVEL[alerta.nivel]}</p>
