@@ -1,14 +1,18 @@
 import type { ReactNode } from 'react'
-import { Layout } from '../components/Layout'
+import { Apresentacao } from '../components/Apresentacao'
+import { Reveal, RevealLinhas } from '../components/motion/Reveal'
 import { BASE, FATORES, LIMIAR_ALTO, milhar, pct } from '../dados/base'
 
 function Secao({ id, titulo, resumo, children }: { id: string; titulo: string; resumo: string; children: ReactNode }) {
   return (
-    <section id={id} aria-labelledby={`${id}-t`} className="scroll-mt-24 rounded-3xl bg-white p-6 shadow-sm ring-1 ring-petroleo/10 md:p-8">
-      <h2 id={`${id}-t`} className="text-2xl font-extrabold tracking-tight">{titulo}</h2>
+    // data-secao: alimenta o indicador de secao na navegacao; Reveal: cada bloco sobe ao entrar na tela
+    <Reveal>
+    <section id={id} data-secao={titulo} aria-labelledby={`${id}-t`} className="scroll-mt-24 rounded-3xl bg-white p-6 shadow-sm ring-1 ring-petroleo/10 md:p-8">
+      <h2 id={`${id}-t`} className="font-display text-display-md font-semibold">{titulo}</h2>
       <p className="mt-2 text-lg text-tinta/80">{resumo}</p>
       <div className="mt-5 space-y-4 text-base leading-relaxed">{children}</div>
     </section>
+    </Reveal>
   )
 }
 
@@ -43,15 +47,16 @@ const SUMARIO = [
 export default function ComoFunciona() {
   const pesos = FATORES.map((f) => ({ ...f, peso: BASE.modelo.pesos[f.chave] })).sort((a, b) => Math.abs(b.peso) - Math.abs(a.peso))
   return (
-    <Layout>
-      <div className="mx-auto max-w-6xl px-4 py-10">
-        <h1 className="text-4xl font-extrabold tracking-tight">Como funciona — e o que cada dado significa</h1>
+    <Apresentacao>
+      <div className="mx-auto max-w-6xl px-4 pb-20 pt-28">
+        <p className="text-sm font-bold uppercase tracking-[0.2em] text-petroleo">Como funciona</p>
+        <RevealLinhas como="h1" imediato linhas={['O que cada dado significa', '— e como o Zelo decide.']} classeLinha={(i) => (i === 1 ? 'italic text-petroleo' : '')} className="mt-3 font-display text-display-lg font-semibold text-tinta" />
         <p className="mt-3 max-w-3xl text-lg text-tinta/85">
           Tudo o que aparece no painel da UBS e no app do cidadão, explicado em linguagem simples, com as regras exatas que o sistema aplica.
         </p>
 
         <div className="mt-8 grid gap-8 lg:grid-cols-[15rem_1fr]">
-          <nav aria-label="Nesta página" className="lg:sticky lg:top-24 lg:self-start">
+          <nav aria-label="Nesta página" className="lg:sticky lg:top-28 lg:self-start">
             <p className="mb-2 text-sm font-bold uppercase tracking-wider text-tinta/70">Nesta página</p>
             <ul className="flex flex-wrap gap-2 lg:flex-col lg:gap-1">
               {SUMARIO.map(([id, t]) => (
@@ -182,6 +187,6 @@ export default function ComoFunciona() {
           </div>
         </div>
       </div>
-    </Layout>
+    </Apresentacao>
   )
 }

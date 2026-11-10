@@ -1,23 +1,62 @@
-import { useState } from 'react'
+import { useRef, useState } from 'react'
 import { aceitarOferta, recusarOferta } from '../api/endpoints'
 import { ApiError } from '../api/cliente'
 import { formatarDataHora, mmss } from '../api/formato'
 import type { OfertaDetalhe } from '../api/tipos'
+import { avisarVagaAceita } from '../eventos'
 import { useContagem } from '../hooks/useContagem'
-import { IconeRelogio } from './Icones'
+import { confete } from './motion/Confetti'
 
-/** Cartao da vaga oferecida, com contagem regressiva. Os botoes chamam a mesma regra que a conversa por voz. */
+const VALIDADE_S = 15 * 60
+
+/**
+ * Anel de contagem regressiva: o tempo que falta e visto de relance, sem precisar ler numeros.
+ * O numero continua no centro (e no role="timer") para quem prefere ler.
+ */
+function AnelTempo({ restantes, urgente }: { restantes: number; urgente: boolean }) {
+  const fracao = Math.max(0, Math.min(1, restantes / VALIDADE_S))
+  return (
+    <div className="relative size-24 shrink-0">
+      <svg viewBox="0 0 100 100" aria-hidden className="size-full -rotate-90">
+        <circle cx="50" cy="50" r="44" fill="none" stroke="rgb(15 92 87 / 0.12)" strokeWidth="9" />
+        <circle
+          cx="50" cy="50" r="44" fill="none" pathLength={1}
+          stroke={urgente ? '#c2410c' : '#0f5c57'} strokeWidth="9" strokeLinecap="round"
+          strokeDasharray={1} strokeDashoffset={1 - fracao}
+          className="transition-[stroke-dashoffset] duration-500 ease-linear"
+        />
+      </svg>
+      <span
+        role="timer"
+        aria-label={`Tempo para responder: ${mmss(restantes)}`}
+        className={`absolute inset-0 flex items-center justify-center text-xl font-extrabold tabular-nums ${urgente ? 'text-alerta' : 'text-petroleo'}`}
+      >
+        {mmss(restantes)}
+      </span>
+    </div>
+  )
+}
+
+/** Cartao da vaga oferecida. Os botoes chamam a mesma regra que a conversa por voz. */
 export function OfertaCard({ oferta, aoResponder }: { oferta: OfertaDetalhe; aoResponder: () => void }) {
   const restantes = useContagem(oferta.segundosRestantes, oferta.id)
   const [ocupado, setOcupado] = useState(false)
   const [erro, setErro] = useState<string | null>(null)
+  const botaoAceitar = useRef<HTMLButtonElement>(null)
   const urgente = restantes <= 120
 
   async function responder(acao: 'aceitar' | 'recusar') {
     setOcupado(true)
     setErro(null)
     try {
-      await (acao === 'aceitar' ? aceitarOferta(oferta.id) : recusarOferta(oferta.id))
+      if (acao === 'aceitar') {
+        await aceitarOferta(oferta.id)
+        // celebracao curta: o alivio de conseguir a consulta (nao acontece com reduced-motion)
+        confete(botaoAceitar.current)
+        avisarVagaAceita()
+      } else {
+        await recusarOferta(oferta.id)
+      }
     } catch (e) {
       setErro(e instanceof ApiError ? e.message : 'Não deu certo. Tente de novo.')
     } finally {
@@ -27,22 +66,20 @@ export function OfertaCard({ oferta, aoResponder }: { oferta: OfertaDetalhe; aoR
   }
 
   return (
-    <section aria-label="Vaga disponível para você" className="rounded-2xl border-2 border-ambar bg-white p-4 shadow-md">
-      <h2 className="text-lg font-extrabold text-petroleo">Vaga para você!</h2>
-      <p className="mt-1 text-lg font-semibold">{oferta.especialidade}</p>
-      <p className="text-base">{formatarDataHora(oferta.dataHoraVaga)}</p>
-      <p className="text-base text-tinta/80">{oferta.ubsNome}</p>
+    <section aria-label="Vaga disponível para você" className="animate-chegar rounded-2xl border-2 border-ambar bg-white p-4 shadow-md">
+      <div className="flex items-center gap-4">
+        <div className="min-w-0 flex-1">
+          <h2 className="text-lg font-extrabold text-petroleo">Vaga para você!</h2>
+          <p className="mt-1 text-lg font-semibold">{oferta.especialidade}</p>
+          <p className="text-base">{formatarDataHora(oferta.dataHoraVaga)}</p>
+          <p className="text-base text-tinta/80">{oferta.ubsNome}</p>
+        </div>
+        <AnelTempo restantes={restantes} urgente={urgente} />
+      </div>
 
-      <p
-        role="timer"
-        aria-label={`Tempo para responder: ${mmss(restantes)}`}
-        className={`mt-3 flex items-center gap-2 text-2xl font-extrabold tabular-nums ${urgente ? 'text-alerta' : 'text-petroleo'}`}
-      >
-        <IconeRelogio /> {mmss(restantes)}
-      </p>
-
-      <div className="mt-3 grid grid-cols-2 gap-3">
+      <div className="mt-4 grid grid-cols-2 gap-3">
         <button
+          ref={botaoAceitar}
           type="button"
           disabled={ocupado || restantes === 0}
           onClick={() => void responder('aceitar')}
