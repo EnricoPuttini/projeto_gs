@@ -11,6 +11,8 @@ export interface Ubs {
   id: number
   nome: string
   endereco: string
+  lat: number
+  lng: number
 }
 
 export type ConsultaStatus =
