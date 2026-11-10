@@ -14,7 +14,7 @@
 | Impacto medido | Vagas recuperadas · dias de espera economizados · taxa de comparecimento · moradores alertados antes do alagamento. |
 | Dados | 100% simulados (nenhum dado pessoal real). |
 
-> Status: **M4 em andamento** — código, Docker e roteiro prontos; falta a equipe criar os serviços no Render (ver [`TODO-EQUIPE.md`](TODO-EQUIPE.md)).
+> Status: **no ar** — site: <https://zelo-app-cnp7.onrender.com> · API: <https://zelo-api-cnp7.onrender.com/swagger-ui.html> (banco: Oracle da FIAP). Plano free: o backend dorme sem uso e leva ~50 s para acordar.
 
 ## Como rodar local
 
@@ -62,6 +62,8 @@ O `render.yaml` na raiz descreve os dois serviços. O backend é um **Web Servic
 | zelo-api | `CORS_ORIGINS` | URL do `zelo-app`, sem barra final |
 | zelo-api | `ZELO_DEMO_MODE` | `false`; `true` só no dia da demo |
 | zelo-app | `VITE_API_URL` | URL do `zelo-api`, sem barra final |
+
+> **Atenção aos nomes:** se `zelo-api`/`zelo-app` já existirem no Render, ele acrescenta um sufixo (aqui ficou `-cnp7`). Use as URLs **reais** em `VITE_API_URL` e `CORS_ORIGINS` e, depois de mudar `VITE_API_URL`, rode **Manual Deploy → Clear build cache & deploy** (o endereço é gravado no build).
 
 3. Rode `database/01_ddl.sql` e `database/02_dml.sql` no schema do Oracle (uma vez).
 4. Teste: `https://SEU-API.onrender.com/actuator/health` deve responder `UP`; depois abra o `zelo-app`.
