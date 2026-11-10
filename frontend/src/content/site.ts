@@ -67,6 +67,9 @@ export const SITE = {
     titulo: 'E quando a chuva chega antes do aviso?',
     texto:
       'A cada 15 minutos o Zelo lê a previsão (Open-Meteo) de cada área perto de córrego. Se a chuva das próximas 3 horas passar do limite da área, quem tem um local salvo dentro do raio recebe o alerta — com sirene, o abrigo mais perto e a rota.',
+    // mesmo texto e distancia que o backend calcula para a casa da Dona Cida no seed
+    alerta: 'Vai chover forte perto de Casa.',
+    abrigo: 'Vá para o abrigo: 465 m.',
     passos: ['Previsão passa do limite', 'Área de risco acende', 'Alerta chega no celular', 'Rota até o abrigo'],
     fonte: 'Previsão horária: Open-Meteo. Regra: soma da chuva das próximas 3 h ≥ limite da área.',
   },
