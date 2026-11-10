@@ -276,7 +276,7 @@ export default function Ubs({ embutido = false }: { embutido?: boolean }) {
     <label className="flex min-w-0 max-w-full flex-wrap items-center gap-2 text-base font-semibold">
       Unidade
       <select value={ubsId} onChange={(e) => setParams({ ubs: e.target.value })} className="min-h-11 min-w-0 max-w-full rounded-lg border border-petroleo/20 bg-white px-3 text-base text-tinta">
-        {(unidades.dados ?? [{ id: ubsId, nome: `UBS ${ubsId}`, endereco: '' }]).map((u) => (
+        {(unidades.dados ?? [{ id: ubsId, nome: `UBS ${ubsId}`, endereco: '', lat: 0, lng: 0 }]).map((u) => (
           <option key={u.id} value={u.id}>{u.nome}</option>
         ))}
       </select>
