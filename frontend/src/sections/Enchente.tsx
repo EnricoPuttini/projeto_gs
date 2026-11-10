@@ -117,7 +117,7 @@ export function Enchente() {
         gsap.set(passos, { opacity: 1 })
         return
       }
-      gsap.set(passos, { opacity: 0.35 })
+      gsap.set(passos, { opacity: 0.6 }) // 0.6 sobre o fundo escuro ainda passa AA
       gsap.set('[data-alerta]', { autoAlpha: 0, y: 24 })
       gsap.to('[data-pulso]', { attr: { r: 112 }, opacity: 0.05, duration: 1.4, repeat: -1, ease: 'sine.out' })
 
@@ -141,7 +141,7 @@ export function Enchente() {
       <div className="mx-auto grid max-w-7xl items-center gap-12 px-4 lg:grid-cols-[1fr_1.2fr]">
         <div>
           <p className="text-sm font-bold uppercase tracking-[0.2em] text-amber-200">Alerta de enchente</p>
-          <RevealLinhas como="h2" linhas={[enchente.titulo]} className="mt-3 font-display text-display-lg font-semibold" />
+          <RevealLinhas como="h2" id="enchente-titulo" linhas={[enchente.titulo]} className="mt-3 font-display text-display-lg font-semibold" />
           <p className="mt-5 max-w-lg text-lg leading-relaxed text-papel/85">{enchente.texto}</p>
           <ol className="mt-8 space-y-3">
             {enchente.passos.map((p, i) => (
@@ -160,7 +160,7 @@ export function Enchente() {
           <div data-alerta className="absolute bottom-4 left-4 right-4 flex items-center gap-3 rounded-2xl bg-alerta p-4 shadow-2xl sm:left-auto sm:w-80">
             <IconeChuva className="size-8 shrink-0" />
             <p className="text-base font-bold leading-snug">
-              {enchente.alerta} <span className="font-semibold text-white/90">{enchente.abrigo}</span>
+              {enchente.alerta} <span className="font-semibold">{enchente.abrigo}</span>
             </p>
           </div>
         </div>

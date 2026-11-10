@@ -49,7 +49,8 @@ export function Solucao() {
         const linha = ref.current!.querySelector<SVGPathElement>('[data-linha-passos]')!
         const comprimento = linha.getTotalLength()
         gsap.set(linha, { strokeDasharray: comprimento, strokeDashoffset: comprimento })
-        gsap.set(passos.slice(1), { opacity: 0.3 })
+        // 0.75 (nao menos): o passo inativo esmaece mas continua com contraste AA para quem enxerga pouco
+        gsap.set(passos.slice(1), { opacity: 0.75 })
         gsap.set(telas.slice(1), { autoAlpha: 0, y: 20 })
 
         const tl = gsap.timeline({
@@ -58,7 +59,7 @@ export function Solucao() {
         tl.to(linha, { strokeDashoffset: 0, ease: 'none', duration: passos.length - 1 }, 0)
         passos.forEach((p, i) => {
           if (i === 0) return
-          tl.to(passos[i - 1], { opacity: 0.3, duration: 0.3 }, i - 0.5)
+          tl.to(passos[i - 1], { opacity: 0.75, duration: 0.3 }, i - 0.5)
             .to(p, { opacity: 1, duration: 0.3 }, i - 0.5)
             .to(telas[i - 1], { autoAlpha: 0, y: -20, duration: 0.3 }, i - 0.5)
             .to(telas[i], { autoAlpha: 1, y: 0, duration: 0.3 }, i - 0.35)
@@ -73,7 +74,7 @@ export function Solucao() {
       <div className="mx-auto grid w-full max-w-7xl items-center gap-12 px-4 md:grid-cols-[1.1fr_1fr]">
         <div>
           <p className="text-sm font-bold uppercase tracking-[0.2em] text-petroleo">A solução</p>
-          <RevealLinhas como="h2" linhas={[solucao.titulo]} className="mt-3 font-display text-display-lg font-semibold text-tinta" />
+          <RevealLinhas como="h2" id="solucao-titulo" linhas={[solucao.titulo]} className="mt-3 font-display text-display-lg font-semibold text-tinta" />
           <ol className="relative mt-10 space-y-8 pl-14">
             {/* linha que liga os passos e se desenha conforme o scroll (desktop) */}
             <svg aria-hidden className="absolute left-[1.15rem] top-2 h-[calc(100%-1rem)] w-1 overflow-visible" preserveAspectRatio="none" viewBox="0 0 4 100">
@@ -88,7 +89,7 @@ export function Solucao() {
                 {/* so o texto esmaece nos passos inativos; o numero fica opaco para a linha nao aparecer atraves dele */}
                 <div data-passo>
                   <h3 className="text-xl font-bold text-tinta">{p.titulo}</h3>
-                  <p className="mt-1 text-base leading-relaxed text-tinta/80">{p.texto}</p>
+                  <p className="mt-1 text-base leading-relaxed text-tinta/90">{p.texto}</p>
                 </div>
                 {/* celular: sem pin, cada passo mostra o que aparece na tela logo abaixo */}
                 <div className="mt-3 space-y-2 rounded-2xl bg-[#e6efe9] p-3 md:hidden">{TELAS[i]}</div>
