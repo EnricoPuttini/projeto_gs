@@ -40,10 +40,11 @@
     from { opacity: 0; transform: translateY(16px); }
     to { opacity: 1; transform: none; }
   }
-  /* mensagem nova no chat: desliza de baixo e aparece */
+  /* mensagem nova no chat: desliza de baixo e cresce. Sem opacidade de proposito: o texto nunca fica
+     translucido (contraste AA o tempo todo, mesmo no meio da animacao) */
   @keyframes chegar {
-    from { opacity: 0; transform: translateY(10px) scale(0.98); }
-    to { opacity: 1; transform: none; }
+    from { transform: translateY(14px) scale(0.94); }
+    to { transform: none; }
   }
   /* logo: "batimento" lento e discreto */
   @keyframes respirar {

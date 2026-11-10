@@ -87,3 +87,25 @@ Abaixo de 768px (`gsap.matchMedia`), os pins viram sequência vertical simples.
 - O endpoint `/painel/metricas` não existe: os indicadores vêm de `/painel/ubs/{id}`, que já devolve os 4 números de impacto. Nenhuma mudança de backend.
 - Os nomes da equipe ficam como campos a preencher em `site.ts` (não invento nomes).
 - Screenshots com Chrome real via `puppeteer-core` (mesmo papel do Playwright, já instalado e validado aqui).
+
+## 9. Resultados medidos e cortes feitos (09/11)
+
+**Lighthouse mobile, página Início, build de produção** (5 rodadas finais): Performance 90–94 (mediana 92), Acessibilidade 100, Boas práticas 96, SEO 91. LCP 1,2–1,3 s, TBT ~300 ms, CLS 0. Antes das otimizações: Performance 69–75, LCP 2,7–3,5 s, TBT 680–1.540 ms.
+
+Medido por experimento (uma mudança por vez), não por palpite:
+
+| Mudança | Efeito medido | Por quê |
+|---|---|---|
+| **Cortada** a grade quadriculada com máscara radial no fundo do hero | TBT −800 ms | Decorativa; custava mais que todo o resto da página |
+| Lenis **desligado em tela de toque** | TBT −200 ms | No toque a inércia já é nativa; no desktop continua |
+| Início importada direto (sem `lazy`) | LCP 2,8 s → 1,3 s | A porta de entrada não pode esperar um segundo download |
+| Seções abaixo do hero em pedaço separado e **montadas uma por vez** em momentos ociosos | TBT 540 → 300 ms | Montar 8 seções juntas era uma tarefa longa; tudo continua no DOM em ~1–2 s (inclusive para leitor de tela) |
+| Animações infinitas (marquee, pulsos) só rodam com a seção na tela | menos CPU fora da tela | ScrollTrigger `toggleActions: play pause resume pause` |
+| Subtítulo do hero sem animação de entrada | é o elemento de LCP | Texto pinta na primeira pintura |
+
+**Ajustes de acessibilidade decididos no processo (axe-core: 0 violações em 16 combinações, com e sem reduced-motion):**
+- passos inativos da solução esmaecem para 75% (não 30%): o efeito continua e o texto mantém contraste AA;
+- mensagem nova do chat entra só com deslocamento/escala, **sem opacidade**: o texto nunca fica translúcido;
+- ODS 3 e ODS 11 usam texto escuro sobre a cor oficial (branco não atinge AA);
+- contagens animadas expõem o valor final em texto `sr-only` (leitor de tela não ouve a contagem);
+- `<caption class="sr-only">` dentro de área rolável precisa de ancestral `relative` (sem isso esticava a página em 1.000 px).

@@ -1,8 +1,9 @@
 import { lazy, Suspense } from 'react'
 import { BrowserRouter, Navigate, Route, Routes, useLocation } from 'react-router-dom'
 import { Carregando } from './components/Estados'
+// Inicio e a porta de entrada: importada direto, para o LCP nao esperar um segundo download
+import Inicio from './pages/Inicio'
 
-const Inicio = lazy(() => import('./pages/Inicio'))
 const ComoFunciona = lazy(() => import('./pages/ComoFunciona'))
 const Cidadao = lazy(() => import('./pages/Cidadao'))
 const Ubs = lazy(() => import('./pages/Ubs'))

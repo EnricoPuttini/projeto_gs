@@ -26,7 +26,7 @@ export function Ecossistema() {
       // um pulso percorre cada ligacao em loop: os dados circulam entre os parceiros
       gsap.utils.toArray<SVGCircleElement>('[data-pulso-eco]').forEach((p, i) => {
         const [x, y] = POS[p.dataset.no!]
-        gsap.fromTo(p, { attr: { cx: 50, cy: 50 }, opacity: 0 }, { attr: { cx: x, cy: y }, opacity: 1, duration: 1.8, delay: 1.4 + i * 0.35, repeat: -1, repeatDelay: 1.2, ease: 'power1.inOut' })
+        gsap.fromTo(p, { attr: { cx: 50, cy: 50 }, opacity: 0 }, { attr: { cx: x, cy: y }, opacity: 1, duration: 1.8, delay: 1.4 + i * 0.35, repeat: -1, repeatDelay: 1.2, ease: 'power1.inOut', scrollTrigger: { trigger: '[data-diagrama]', toggleActions: 'play pause resume pause' } })
       })
     },
     { scope: ref },

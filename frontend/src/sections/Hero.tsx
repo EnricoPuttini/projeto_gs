@@ -71,15 +71,14 @@ export function Hero() {
         gsap.to(el, { y: i % 2 ? -10 : 10, duration: 2.6 + i, ease: 'sine.inOut', yoyo: true, repeat: -1 })
         gsap.to(el, { yPercent: i % 2 ? -120 : -60, ease: 'none', scrollTrigger: { trigger: ref.current, start: 'top top', end: 'bottom top', scrub: true } })
       })
-      gsap.from('[data-hero-entra]', { y: 24, opacity: 0, duration: 0.9, ease: 'power3.out', stagger: 0.12, delay: 0.55 })
+      gsap.from('[data-hero-entra]', { y: 24, opacity: 0, duration: 0.7, ease: 'power3.out', stagger: 0.1, delay: 0.35 })
     },
     { scope: ref },
   )
 
   return (
     <section ref={ref} data-secao="Início" aria-labelledby="hero-titulo" className="relative overflow-hidden bg-papel pt-24">
-      {/* grade sutil de "papel milimetrado": editorial, sem gradiente generico */}
-      <div aria-hidden className="pointer-events-none absolute inset-0 opacity-[0.35] [background-image:linear-gradient(rgb(15_92_87/0.07)_1px,transparent_1px),linear-gradient(90deg,rgb(15_92_87/0.07)_1px,transparent_1px)] [background-size:48px_48px] [mask-image:radial-gradient(ellipse_at_30%_40%,black,transparent_75%)]" />
+      {/* (havia aqui uma grade quadriculada com mascara radial: cortada — custava ~800 ms de bloqueio no celular, ver docs/design.md) */}
       <div className="relative mx-auto grid max-w-7xl items-center gap-12 px-4 pb-20 pt-10 lg:grid-cols-[1.35fr_1fr] lg:pb-28 lg:pt-16">
         <div>
           <p data-hero-entra className="inline-flex items-center gap-2 rounded-full border border-tinta/15 bg-white px-3 py-1 text-sm font-semibold text-tinta">
@@ -93,7 +92,7 @@ export function Hero() {
             className="mt-6 font-display text-display-xl font-semibold text-tinta"
             classeLinha={(i) => (i === hero.enfase ? 'italic text-petroleo' : '')}
           />
-          <p data-hero-entra className="mt-7 max-w-xl text-lg leading-relaxed text-tinta/85 sm:text-xl">{hero.subtitulo}</p>
+          <p className="mt-7 max-w-xl text-lg leading-relaxed text-tinta/85 sm:text-xl">{hero.subtitulo}</p>
           <div data-hero-entra className="mt-9 flex flex-wrap items-center gap-4">
             <Magnetic className="rounded-full">
               <Link to="/demo" className="inline-flex min-h-14 items-center gap-3 rounded-full bg-petroleo px-7 text-lg font-bold text-white shadow-lg shadow-petroleo/25 hover:bg-petroleo-escuro">
