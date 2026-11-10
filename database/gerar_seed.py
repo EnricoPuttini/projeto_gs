@@ -120,6 +120,12 @@ for dia in range(0, 7):
             w(f"INSERT INTO ZL_CONSULTA (ID,PACIENTE_ID,UBS_ID,ESPEC_ID,DATA_HORA,STATUS,RISCO_FALTA,ORIGEM,LEMBRETE_ENVIADO,CRIADA_EM) "
               f"VALUES ({cid},{pac},{ubs_id},{esp},TRUNC(CURRENT_DATE)+{dia}+{h}/24,'{status}',{risco_falta},'NORMAL',0,TRUNC(CURRENT_DATE)-10);")
 
+# Dona Cida tambem tem uma consulta propria (Cardiologia, daqui a 5 dias): assim, fora da demo, a voz
+# tem o que responder ("minha consulta", "cancelar consulta"). Fica no fim para nao mudar os ids anteriores.
+cid += 1
+w(f"INSERT INTO ZL_CONSULTA (ID,PACIENTE_ID,UBS_ID,ESPEC_ID,DATA_HORA,STATUS,RISCO_FALTA,ORIGEM,LEMBRETE_ENVIADO,CRIADA_EM) "
+  f"VALUES ({cid},1,1,4,TRUNC(CURRENT_DATE)+5+10/24,'AGENDADA',{risco({**perfil[1], 'diasAntecedencia': 15})},'NORMAL',0,TRUNC(CURRENT_DATE)-10);")
+
 # Fila: ~25 pessoas. UBS1/Clinica Geral tem 12 (Dona Cida no topo: idosa, gravidade 3, 90 dias de espera).
 fila = [(1, 1, 1, 3, 90)]
 cg = [5, 9, 13, 17, 21, 25, 29, 33, 37, 40, 12]  # outros 11 na fila de Clinica Geral UBS 1
