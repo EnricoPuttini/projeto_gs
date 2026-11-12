@@ -1,7 +1,6 @@
 package br.com.zelo.controller;
 
 import br.com.zelo.bo.DemoBO;
-import br.com.zelo.model.Consulta;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.constraints.Max;
@@ -29,7 +28,7 @@ public class DemoController {
 
     @PostMapping("/cancelar-consulta")
     @Operation(summary = "Paciente cancela a consulta de amanhã (libera a vaga e dispara o encaixe)")
-    public Consulta cancelarConsulta() {
+    public br.com.zelo.model.OfertaVaga cancelarConsulta() {
         return bo.cancelarConsulta();
     }
 

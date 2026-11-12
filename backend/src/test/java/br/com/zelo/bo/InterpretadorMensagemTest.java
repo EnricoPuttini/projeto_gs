@@ -13,7 +13,7 @@ class InterpretadorMensagemTest {
     private final InterpretadorMensagem interpretador = new InterpretadorMensagem();
 
     @ParameterizedTest
-    @ValueSource(strings = {"sim", "Sim!", "SIM", "quero", "Quero a vaga", "pode marcar", "Pode ser", "aceito",
+    @ValueSource(strings = {"sim", "Sim!", "SIM", "quero", "Pode ser", "aceito",
             "claro", "tá bom, pode", "tá bom", "isso", "confirmo", "vou sim", "beleza", "OK"})
     void entendeAfirmacoes(String texto) {
         assertThat(interpretador.interpretar(texto)).isEqualTo(Intencao.AFIRMATIVA);
@@ -57,6 +57,12 @@ class InterpretadorMensagemTest {
     @ValueSource(strings = {"isso é um teste", "vou ver com a minha filha depois", "pode ser que eu esteja ocupada amanhã cedo"})
     void aceiteFracoNoMeioDaFraseNaoMarcaConsulta(String texto) {
         assertThat(interpretador.interpretar(texto)).isNotEqualTo(Intencao.AFIRMATIVA);
+    }
+
+    @ParameterizedTest
+    @ValueSource(strings = {"quero vaga", "Quero a vaga", "pode marcar", "quero marcar uma consulta", "tem vaga?", "me encaixa"})
+    void entendePedidoDeVaga(String texto) {
+        assertThat(interpretador.interpretar(texto)).isEqualTo(Intencao.PEDIR_VAGA);
     }
 
     @Test
