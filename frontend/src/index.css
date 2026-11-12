@@ -118,25 +118,3 @@ html.lenis body {
   }
 }
 
-/* Leaflet: botoes de zoom e atribuicao com alvo de toque >= 44px (padrao do Leaflet e 30px).
-   Seletores mais especificos que os do leaflet.css, que carrega DEPOIS (junto com o mapa, sob demanda). */
-.leaflet-container.leaflet-touch .leaflet-bar a,
-.leaflet-container .leaflet-bar a {
-  width: 44px;
-  height: 44px;
-  line-height: 44px;
-  font-size: 22px;
-}
-.leaflet-container .leaflet-control-attribution {
-  font-size: 13px;
-}
-.leaflet-container .leaflet-control-attribution a {
-  display: inline-flex;
-  min-height: 44px;
-  align-items: center;
-  color: #0a403c;
-}
-.zelo-marcador {
-  background: none;
-  border: none;
-}

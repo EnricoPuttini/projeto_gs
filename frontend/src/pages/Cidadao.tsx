@@ -170,7 +170,7 @@ export default function Cidadao({ embutido = false }: { embutido?: boolean }) {
             </p>
             <p className="mt-3 text-sm font-bold text-tinta/70">Experimente:</p>
             <div className="mt-1 flex flex-wrap gap-2">
-              {['Minha consulta', 'Cancelar consulta', 'Estou seguro'].map((t) => (
+              {['Quero uma vaga', 'Minha consulta', 'Cancelar consulta', 'Estou seguro'].map((t) => (
                 <button key={t} type="button" onClick={() => void enviar(t)} className="min-h-11 rounded-full border-2 border-petroleo px-4 text-base font-bold text-petroleo">
                   {t}
                 </button>
@@ -205,6 +205,7 @@ export default function Cidadao({ embutido = false }: { embutido?: boolean }) {
         {oferta && (
           <OfertaCard
             oferta={oferta}
+            pelaConversa={enviar}
             aoResponder={() => {
               mensagens.atualizar()
               ofertas.atualizar()

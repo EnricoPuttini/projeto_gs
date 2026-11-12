@@ -8,7 +8,12 @@ import br.com.zelo.job.JobsProcessador;
 import br.com.zelo.model.AreaRisco;
 import br.com.zelo.model.Consulta;
 import br.com.zelo.model.ConsultaStatus;
+import br.com.zelo.dto.FilaRequest;
+import br.com.zelo.dto.ConsultaRequest;
+import br.com.zelo.model.OfertaStatus;
+import br.com.zelo.model.OfertaVaga;
 import br.com.zelo.model.Origem;
+import br.com.zelo.model.VagaStatus;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.stereotype.Service;
 
@@ -16,6 +21,8 @@ import java.time.Clock;
 import java.time.Duration;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.time.LocalTime;
+import java.util.Optional;
 import java.util.Set;
 
 /**
@@ -29,10 +36,18 @@ public class DemoBO {
     /** O roteiro da demo usa a UBS 1 e a Clinica Geral (ver database/gerar_seed.py). */
     static final long UBS_DEMO = 1L;
     static final long ESPECIALIDADE_DEMO = 1L;
+    /** Dona Cida, a persona do celular da demo. */
+    static final long PACIENTE_DEMO = 1L;
+    private static final int GRAVIDADE_PEDIDO = 3;
     private static final Set<ConsultaStatus> CANCELAVEIS =
             Set.of(ConsultaStatus.AGENDADA, ConsultaStatus.AGUARDANDO_CONFIRMACAO, ConsultaStatus.CONFIRMADA);
 
     private final ConsultaBO consultas;
+    private final FilaBO fila;
+    private final OfertaBO ofertas;
+    private final EncaixeBO encaixe;
+    private final VagaBO vagas;
+    private final PacienteBO pacientes;
     private final AlertaBO alertas;
     private final ReferenciaBO referencia;
     private final JobsProcessador jobs;
@@ -40,9 +55,14 @@ public class DemoBO {
     private final DemoDAO dao;
     private final Clock clock;
 
-    public DemoBO(ConsultaBO consultas, AlertaBO alertas, ReferenciaBO referencia, JobsProcessador jobs,
-                  PrevisaoChuva previsao, DemoDAO dao, Clock clock) {
+    public DemoBO(ConsultaBO consultas, FilaBO fila, OfertaBO ofertas, EncaixeBO encaixe, VagaBO vagas, PacienteBO pacientes,
+                  AlertaBO alertas, ReferenciaBO referencia, JobsProcessador jobs, PrevisaoChuva previsao, DemoDAO dao, Clock clock) {
         this.consultas = consultas;
+        this.fila = fila;
+        this.ofertas = ofertas;
+        this.encaixe = encaixe;
+        this.vagas = vagas;
+        this.pacientes = pacientes;
         this.alertas = alertas;
         this.referencia = referencia;
         this.jobs = jobs;
@@ -51,16 +71,80 @@ public class DemoBO {
         this.clock = clock;
     }
 
-    /** "Paciente cancela consulta": cancela a primeira consulta de amanha da Clinica Geral na UBS da demo. */
-    public Consulta cancelarConsulta() {
-        LocalDate amanha = LocalDate.now(clock).plusDays(1);
-        Consulta alvo = consultas.listarAgenda(UBS_DEMO, amanha).stream()
-                .filter(c -> c.especialidadeId() == ESPECIALIDADE_DEMO && c.origem() == Origem.NORMAL
-                        && CANCELAVEIS.contains(c.status()))
+    /** "Paciente cancela consulta" (passo 1 da demo): abre uma vaga e garante que ela chegue a Dona Cida. */
+    public OfertaVaga cancelarConsulta() {
+        return garantirVagaPara(PACIENTE_DEMO);
+    }
+
+    /**
+     * Ambiente de teste "sempre com vaga": a pessoa da demo pode pedir vaga, aceitar, cancelar e pedir de novo
+     * quantas vezes quiser, sem depender do que sobrou na agenda. Tudo pelos caminhos reais do sistema:
+     * 1) quem pede vaga entra na fila (FilaBO); 2) alguem desmarca uma consulta de amanha (ConsultaBO.cancelar,
+     * que abre a vaga e oferta ao 1o do ranking) — se a agenda de amanha acabou, uma consulta e marcada para isso;
+     * 3) quem estiver na frente na fila RECUSA (EncaixeBO.recusar), e a vaga desce ate a pessoa da demo.
+     * O painel da UBS mostra essa cascata como mostraria na vida real.
+     */
+    public OfertaVaga garantirVagaPara(long pacienteId) {
+        Optional<OfertaVaga> pendente = ofertas.listarPorPaciente(pacienteId, OfertaStatus.PENDENTE).stream().findFirst();
+        if (pendente.isPresent()) {
+            return pendente.get();
+        }
+        boolean naFila = fila.listarAtivas(UBS_DEMO, ESPECIALIDADE_DEMO).stream().anyMatch(f -> f.pacienteId() == pacienteId);
+        if (!naFila) {
+            fila.entrar(new FilaRequest(pacienteId, UBS_DEMO, ESPECIALIDADE_DEMO, GRAVIDADE_PEDIDO));
+        }
+        Consulta cancelada = consultas.cancelar(consultaParaDesmarcar(pacienteId).id());
+        long vagaId = vagas.listar(UBS_DEMO, VagaStatus.EM_OFERTA).stream()
+                .filter(v -> cancelada.id().equals(v.consultaOrigemId()))
                 .findFirst()
-                .orElseThrow(() -> new RegraNegocioException(
-                        "Não há consulta de amanhã para cancelar. Clique em \"Resetar dados\" e tente de novo."));
-        return consultas.cancelar(alvo.id());
+                .orElseThrow(() -> new RegraNegocioException("A vaga não foi aberta. Clique em \"Recomeçar do zero\" e tente de novo."))
+                .id();
+        int limite = fila.listarAtivas(UBS_DEMO, ESPECIALIDADE_DEMO).size() + 1;
+        for (int i = 0; i < limite; i++) {
+            Optional<OfertaVaga> atual = ofertas.listarPorUbs(UBS_DEMO, OfertaStatus.PENDENTE).stream()
+                    .filter(o -> o.vagaId() == vagaId)
+                    .findFirst();
+            if (atual.isEmpty()) {
+                break;
+            }
+            if (atual.get().pacienteId() == pacienteId) {
+                return atual.get();
+            }
+            encaixe.recusar(atual.get().id());
+        }
+        throw new RegraNegocioException("Não consegui abrir uma vaga agora. Clique em \"Recomeçar do zero\" e tente de novo.");
+    }
+
+    /** Primeira consulta de amanha (Clinica Geral, UBS da demo) de OUTRA pessoa; se acabaram, marca uma para ser desmarcada. */
+    private Consulta consultaParaDesmarcar(long pacienteDemo) {
+        LocalDate amanha = LocalDate.now(clock).plusDays(1);
+        var agenda = consultas.listarAgenda(UBS_DEMO, amanha);
+        Optional<Consulta> existente = agenda.stream()
+                .filter(c -> c.especialidadeId() == ESPECIALIDADE_DEMO && c.origem() == Origem.NORMAL
+                        && CANCELAVEIS.contains(c.status()) && c.pacienteId() != pacienteDemo)
+                .findFirst();
+        if (existente.isPresent()) {
+            return existente.get();
+        }
+        Set<LocalDateTime> ocupados = new java.util.HashSet<>();
+        agenda.forEach(c -> ocupados.add(c.dataHora()));
+        LocalDateTime horario = null;
+        for (int min = 7 * 60; min <= 18 * 60 && horario == null; min += 20) {
+            LocalDateTime h = amanha.atTime(LocalTime.of(min / 60, min % 60));
+            if (!ocupados.contains(h)) {
+                horario = h;
+            }
+        }
+        if (horario == null) {
+            throw new RegraNegocioException("A agenda de amanhã está cheia. Clique em \"Recomeçar do zero\".");
+        }
+        Set<Long> naFila = new java.util.HashSet<>();
+        fila.listarAtivas(UBS_DEMO, ESPECIALIDADE_DEMO).forEach(f -> naFila.add(f.pacienteId()));
+        long outro = pacientes.mapaPorId().keySet().stream().sorted()
+                .filter(id -> id != pacienteDemo && !naFila.contains(id))
+                .findFirst()
+                .orElseThrow(() -> new RegraNegocioException("Não há outro paciente para a demo."));
+        return consultas.agendar(new ConsultaRequest(outro, UBS_DEMO, ESPECIALIDADE_DEMO, horario));
     }
 
     /** "Simular chuva forte": o dobro do limiar da area, o que gera nivel CRITICO. Devolve quantos alertas nasceram. */

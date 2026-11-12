@@ -205,14 +205,14 @@ export default function Demo() {
   else if (cfg.erro && !cfg.dados) conteudo = <div className="p-6 pt-10"><Erro mensagem={cfg.erro} aoTentar={cfg.atualizar} /></div>
   else if (!cfg.dados?.demoMode)
     conteudo = (
-      <div className="mx-auto max-w-xl p-8 pt-10">
+      <div className="mx-auto w-full max-w-xl p-8 pt-10">
         <h1 className="font-display text-display-md font-semibold">Modo demonstração desligado</h1>
         <p className="mt-2 text-lg">Esta tela só funciona com <strong>ZELO_DEMO_MODE=true</strong> no servidor. Ela permite recomeçar os dados, por isso fica desligada no dia a dia.</p>
       </div>
     )
   else
     conteudo = (
-      <div className="mx-auto grid max-w-[1600px] gap-5 px-4 pb-10 pt-6 [&>*]:min-w-0 xl:grid-cols-[19rem_auto_1fr]">
+      <div className="mx-auto grid w-full max-w-[1600px] gap-5 px-4 pb-10 pt-6 [&>*]:min-w-0 xl:grid-cols-[19rem_auto_1fr]">
         <aside aria-labelledby="roteiro" className="space-y-3">
           <h1 id="roteiro" className="font-display text-display-md font-semibold">Roteiro da demonstração</h1>
           <p className="text-base text-tinta/80">Siga os passos na ordem. O celular da Dona Cida e o painel da UBS reagem sozinhos.</p>
@@ -276,5 +276,5 @@ export default function Demo() {
     )
 
   // /demo e tela de PRODUTO (celular + painel): sem Lenis, a roda do mouse rola cada painel normalmente
-  return <Apresentacao largo suave={false}>{conteudo}</Apresentacao>
+  return <Apresentacao largo suave={false} centralizar>{conteudo}</Apresentacao>
 }

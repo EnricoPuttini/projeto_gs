@@ -11,7 +11,7 @@ export function Layout({ children, largo = false }: { children: ReactNode; largo
       </a>
       <MenuLateral>
         <TopoCelular />
-        <main id="conteudo">{children}</main>
+        <main id="conteudo" className="flex-1">{children}</main>
         <footer className="border-t border-petroleo/10 bg-white">
           <div className={`mx-auto flex flex-wrap items-center justify-between gap-2 px-4 py-5 text-sm text-tinta/80 ${largo ? 'max-w-[1500px]' : 'max-w-6xl'}`}>
             <p>
