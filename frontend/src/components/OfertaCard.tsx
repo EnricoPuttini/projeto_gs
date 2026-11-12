@@ -37,8 +37,11 @@ function AnelTempo({ restantes, urgente }: { restantes: number; urgente: boolean
   )
 }
 
-/** Cartao da vaga oferecida. Os botoes chamam a mesma regra que a conversa por voz. */
-export function OfertaCard({ oferta, aoResponder }: { oferta: OfertaDetalhe; aoResponder: () => void }) {
+/**
+ * Cartao da vaga oferecida. Com `pelaConversa`, os botoes respondem PELO CHAT ("quero a vaga" / "nao posso"): a pessoa ve
+ * a confirmacao escrita e os proximos passos, igual a quem responde por voz. Sem ele, chamam a API da oferta direto.
+ */
+export function OfertaCard({ oferta, aoResponder, pelaConversa }: { oferta: OfertaDetalhe; aoResponder: () => void; pelaConversa?: (texto: string) => Promise<void> }) {
   const restantes = useContagem(oferta.segundosRestantes, oferta.id)
   const [ocupado, setOcupado] = useState(false)
   const [erro, setErro] = useState<string | null>(null)
@@ -49,7 +52,9 @@ export function OfertaCard({ oferta, aoResponder }: { oferta: OfertaDetalhe; aoR
     setOcupado(true)
     setErro(null)
     try {
-      if (acao === 'aceitar') {
+      if (pelaConversa) {
+        await pelaConversa(acao === 'aceitar' ? 'quero a vaga' : 'não posso')
+      } else if (acao === 'aceitar') {
         await aceitarOferta(oferta.id)
         // celebracao curta: o alivio de conseguir a consulta (nao acontece com reduced-motion)
         confete(botaoAceitar.current)
