@@ -1,7 +1,7 @@
 import { useEffect, useRef, useState } from 'react'
 import { ApiError } from '../api/cliente'
 import { experimenteConversa, experimenteLugares, experimentePrevisao } from '../api/endpoints'
-import { geocodificar, rotaAPe } from '../api/externo'
+import { chuvaProximas3h, geocodificar, rotaAPe } from '../api/externo'
 import type { Lugar } from '../api/externo'
 import type { Acao, AlertaDetalhe, ContextoTeste, PendenteTeste } from '../api/tipos'
 import { AlertaTelaCheia } from '../components/AlertaTelaCheia'
@@ -83,8 +83,11 @@ export default function Experimente() {
     setCasa(ponto)
     setChuvaReal(null)
     setLugaresStatus('buscando')
+    // servidor primeiro (cache); se ele nao alcancar a Open-Meteo, o navegador tenta direto
     experimentePrevisao(ponto.lat, ponto.lng)
-      .then((p) => setChuvaReal({ disponivel: p.disponivel, mm: p.milimetrosProximas3h }))
+      .then((p) => (p.disponivel ? p.milimetrosProximas3h : Promise.reject(new Error('sem previsao'))))
+      .catch(() => chuvaProximas3h(ponto.lat, ponto.lng))
+      .then((mm) => setChuvaReal({ disponivel: mm != null, mm }))
       .catch(() => setChuvaReal({ disponivel: false, mm: null }))
     try {
       const l = await experimenteLugares(ponto.lat, ponto.lng)

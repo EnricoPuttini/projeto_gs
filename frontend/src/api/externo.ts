@@ -30,6 +30,23 @@ export async function geocodificar(endereco: string): Promise<{ lat: number; lng
   return { lat: Number(r[0].lat), lng: Number(r[0].lon), descricao: r[0].display_name.split(',').slice(0, 3).join(',') }
 }
 
+/** Plano B da previsao: se o servidor nao alcancar a Open-Meteo, o proprio navegador consulta (API aberta, com CORS). */
+export async function chuvaProximas3h(lat: number, lng: number): Promise<number | null> {
+  const url = `https://api.open-meteo.com/v1/forecast?latitude=${lat.toFixed(4)}&longitude=${lng.toFixed(4)}&hourly=precipitation&forecast_days=2&timezone=America%2FSao_Paulo`
+  const r = await comLimite<{ hourly?: { time: string[]; precipitation: number[] } }>(url, {}, 10_000)
+  if (!r.hourly) return null
+  // mesma soma do backend: da hora atual (horario de Brasilia, como a API devolve) ate 3 h a frente
+  const agora = new Date(new Date().toLocaleString('en-US', { timeZone: 'America/Sao_Paulo' }))
+  agora.setMinutes(0, 0, 0)
+  const ini = agora.getTime(), fim = ini + 3 * 3600_000
+  let total = 0
+  r.hourly.time.forEach((t, i) => {
+    const ms = new Date(t).getTime()
+    if (ms >= ini && ms < fim) total += r.hourly!.precipitation[i] ?? 0
+  })
+  return Math.round(total * 10) / 10
+}
+
 /** Rota a pe no Google Maps (mesmo formato que o backend usa no alerta real). */
 export const rotaAPe = (de: { lat: number; lng: number }, ate: { lat: number; lng: number }) =>
   `https://www.google.com/maps/dir/?api=1&origin=${de.lat.toFixed(6)},${de.lng.toFixed(6)}&destination=${ate.lat.toFixed(6)},${ate.lng.toFixed(6)}&travelmode=walking`

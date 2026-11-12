@@ -14,7 +14,7 @@ class InterpretadorMensagemTest {
 
     @ParameterizedTest
     @ValueSource(strings = {"sim", "Sim!", "SIM", "quero", "Quero a vaga", "pode marcar", "Pode ser", "aceito",
-            "claro", "tá bom, pode", "confirmo", "vou sim", "beleza", "OK"})
+            "claro", "tá bom, pode", "tá bom", "isso", "confirmo", "vou sim", "beleza", "OK"})
     void entendeAfirmacoes(String texto) {
         assertThat(interpretador.interpretar(texto)).isEqualTo(Intencao.AFIRMATIVA);
     }
@@ -43,6 +43,20 @@ class InterpretadorMensagemTest {
     void entendeSituacaoDePerigoAntesDeQualquerNao(String texto) {
         // "nao estou seguro" nunca pode virar uma simples NEGATIVA
         assertThat(interpretador.interpretar(texto)).isEqualTo(Intencao.INSEGURO);
+    }
+
+    @ParameterizedTest
+    @ValueSource(strings = {"não entendi", "Não sei", "pode repetir?", "repete por favor", "o que é isso?", "quem fala?", "alô, quem é?",
+            "sim ou não", "pode dizer sim ou não", "como assim?", "hein?"})
+    void duvidaNuncaViraSimNemNao(String texto) {
+        // ao telefone a pessoa idosa pergunta antes de responder: uma duvida nao pode marcar nem recusar a vaga
+        assertThat(interpretador.interpretar(texto)).isEqualTo(Intencao.DUVIDA);
+    }
+
+    @ParameterizedTest
+    @ValueSource(strings = {"isso é um teste", "vou ver com a minha filha depois", "pode ser que eu esteja ocupada amanhã cedo"})
+    void aceiteFracoNoMeioDaFraseNaoMarcaConsulta(String texto) {
+        assertThat(interpretador.interpretar(texto)).isNotEqualTo(Intencao.AFIRMATIVA);
     }
 
     @Test
