@@ -10,15 +10,24 @@ function falar(texto: string, aoTerminar: () => void) {
     setTimeout(aoTerminar, 2000)
     return
   }
-  window.speechSynthesis.cancel()
-  // alguns Androids nunca disparam onend: um tempo de seguranca proporcional ao texto garante que a ligacao siga
+  const sintese = window.speechSynthesis
+  sintese.cancel()
+  // So segue (e liga o microfone) quando a voz REALMENTE parou: se o microfone abrir antes, ele ouve o proprio
+  // Zelo dizendo "sim ou nao" e responde sozinho. Alguns aparelhos nunca disparam onend, por isso tambem
+  // conferimos speechSynthesis.speaking a cada meio segundo, com um limite maximo bem folgado.
   let terminou = false
+  const inicio = Date.now()
+  const limite = 6000 + texto.length * 140
   const uma = () => {
     if (terminou) return
     terminou = true
-    aoTerminar()
+    clearInterval(vigia)
+    setTimeout(aoTerminar, 450) // folga para o eco do alto-falante sumir
   }
-  setTimeout(uma, 2500 + texto.length * 75)
+  const vigia = setInterval(() => {
+    const passou = Date.now() - inicio
+    if ((passou > 1500 && !sintese.speaking && !sintese.pending) || passou > limite) uma()
+  }, 500)
   const u = new SpeechSynthesisUtterance(texto)
   u.lang = 'pt-BR'
   u.rate = 0.88 // mais devagar: quem le com dificuldade costuma ouvir com calma
@@ -26,7 +35,7 @@ function falar(texto: string, aoTerminar: () => void) {
   if (voz) u.voice = voz
   u.onend = uma
   u.onerror = uma
-  window.speechSynthesis.speak(u)
+  sintese.speak(u)
 }
 
 /** Toque de telefone (dois bipes) + vibracao enquanto a ligacao nao e atendida. E funcional (avisa que alguem
@@ -99,15 +108,33 @@ export function Ligacao({
     [aoEncerrar],
   )
 
+  const etapaRef = useRef(etapa)
+  const falaAtual = useRef(0)
+  const dizer = useCallback((texto: string, depois: () => void) => {
+    const id = ++falaAtual.current
+    falar(texto, () => {
+      if (id === falaAtual.current) depois()
+    })
+  }, [])
+  useEffect(() => {
+    etapaRef.current = etapa
+  }, [etapa])
+
   const responder = useCallback(
-    async (texto: string) => {
+    async (texto: string, porVoz = false) => {
+      // pela VOZ so vale na vez da pessoa (senao o microfone pode ter ouvido o proprio Zelo);
+      // pelos BOTOES vale a qualquer momento: tocar interrompe a fala, como cortar alguem numa ligacao
+      if (etapaRef.current === 'pensando' || etapaRef.current === 'fim' || (porVoz && etapaRef.current !== 'ouvindo')) return
+      falaAtual.current++
+      window.speechSynthesis?.cancel()
+      etapaRef.current = 'pensando'
       setOuvido(texto)
       setEtapa('pensando')
       try {
         const r = await aoResponder(texto)
         setLegenda(r.resposta)
         setEtapa('respondendo')
-        falar(r.resposta, () => {
+        dizer(r.resposta, () => {
           if (r.terminou) {
             setEtapa('fim')
             setTimeout(() => encerrar(true), 1200)
@@ -120,10 +147,10 @@ export function Ligacao({
         setEtapa('ouvindo')
       }
     },
-    [aoResponder, encerrar],
+    [aoResponder, encerrar, dizer],
   )
 
-  const voz = useReconhecimento((t) => void responder(t))
+  const voz = useReconhecimento((t) => void responder(t, true))
   const vozRef = useRef(voz)
   vozRef.current = voz
 
@@ -138,7 +165,7 @@ export function Ligacao({
     setEtapa('falando')
     const fala = `Alô${nome ? `, ${nome}` : ''}! Aqui é o Zelo. ${oferta} Você quer essa consulta? Pode dizer sim ou não.`
     setLegenda(fala)
-    falar(fala, () => setEtapa('ouvindo'))
+    dizer(fala, () => setEtapa('ouvindo'))
   }
 
   const tocando = etapa === 'tocando'
@@ -166,8 +193,8 @@ export function Ligacao({
       ) : (
         <div className="space-y-3">
           <div className="grid grid-cols-2 gap-3">
-            <button type="button" disabled={etapa !== 'ouvindo'} onClick={() => void responder('sim, eu quero')} className="min-h-20 rounded-2xl bg-emerald-600 text-2xl font-extrabold text-white disabled:opacity-50">Sim, eu quero</button>
-            <button type="button" disabled={etapa !== 'ouvindo'} onClick={() => void responder('não posso')} className="min-h-20 rounded-2xl bg-white text-2xl font-extrabold text-tinta disabled:opacity-50">Não posso</button>
+            <button type="button" disabled={etapa === 'pensando'} onClick={() => void responder('sim, eu quero')} className="min-h-20 rounded-2xl bg-emerald-600 text-2xl font-extrabold text-white disabled:opacity-50">Sim, eu quero</button>
+            <button type="button" disabled={etapa === 'pensando'} onClick={() => void responder('não posso')} className="min-h-20 rounded-2xl bg-white text-2xl font-extrabold text-tinta disabled:opacity-50">Não posso</button>
           </div>
           <div className="grid grid-cols-2 gap-3">
             {voz.suportado && (

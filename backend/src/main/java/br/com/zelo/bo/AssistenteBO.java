@@ -88,7 +88,7 @@ public class AssistenteBO {
             case SEGURO -> confirmarSeguranca(p);
             case INSEGURO -> orientarEmergencia(p);
             case CONSULTA -> mostrarConsulta(p, oferta);
-            case SAUDACAO, AJUDA, DESCONHECIDA -> ajuda(p, oferta, intencao);
+            case SAUDACAO, AJUDA, DUVIDA, DESCONHECIDA -> ajuda(p, oferta, intencao);
         };
     }
 
@@ -169,7 +169,8 @@ public class AssistenteBO {
 
     private Resposta ajuda(Paciente p, Optional<OfertaVaga> oferta, Intencao intencao) {
         String abertura = intencao == Intencao.SAUDACAO ? "Oi, %s! ".formatted(primeiroNome(p))
-                : intencao == Intencao.DESCONHECIDA ? "Não entendi muito bem. " : "";
+                : intencao == Intencao.DESCONHECIDA ? "Não entendi muito bem. "
+                : intencao == Intencao.DUVIDA ? "Eu explico de novo. " : "";
         if (oferta.isPresent()) {
             return new Resposta(abertura + "Tem uma vaga de consulta esperando a sua resposta. Você quer?", acoesOferta());
         }

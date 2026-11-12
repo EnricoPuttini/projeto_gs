@@ -55,6 +55,9 @@ public class ExperimenteBO {
             return switch (intencao) {
                 case AFIRMATIVA -> new Resposta("Pronto" + nome + "! Sua consulta de " + c.especialidade() + " está marcada: "
                         + c.quando() + ". Local: " + c.unidade() + ". Pode ir tranquilo.", List.of(), Efeito.ACEITOU_VAGA, Pendente.NENHUM);
+                case DUVIDA -> new Resposta("Eu explico de novo" + nome + ". Aqui é o Zelo, o aviso da sua unidade de saúde. Abriu uma vaga de "
+                        + c.especialidade() + " " + c.quando() + ". Local: " + c.unidade() + ". Você quer ir nessa consulta? Diga sim ou não.",
+                        ACOES_OFERTA, Efeito.NENHUM, Pendente.OFERTA);
                 case NEGATIVA, CANCELAR -> new Resposta("Tudo bem. Vou oferecer a vaga para a próxima pessoa da fila. Você continua na fila.",
                         List.of(), Efeito.RECUSOU_VAGA, Pendente.NENHUM);
                 default -> new Resposta("Tem uma vaga de " + c.especialidade() + " " + c.quando() + " esperando a sua resposta. Você quer? "
