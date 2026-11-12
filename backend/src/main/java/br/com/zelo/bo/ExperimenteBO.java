@@ -53,7 +53,7 @@ public class ExperimenteBO {
 
         if (c.pendente() == Pendente.OFERTA) {
             return switch (intencao) {
-                case AFIRMATIVA -> new Resposta("Pronto" + nome + "! Sua consulta de " + c.especialidade() + " está marcada: "
+                case AFIRMATIVA, PEDIR_VAGA -> new Resposta("Pronto" + nome + "! Sua consulta de " + c.especialidade() + " está marcada: "
                         + c.quando() + ". Local: " + c.unidade() + ". Pode ir tranquilo.", List.of(), Efeito.ACEITOU_VAGA, Pendente.NENHUM);
                 case DUVIDA -> new Resposta("Eu explico de novo" + nome + ". Aqui é o Zelo, o aviso da sua unidade de saúde. Abriu uma vaga de "
                         + c.especialidade() + " " + c.quando() + ". Local: " + c.unidade() + ". Você quer ir nessa consulta? Diga sim ou não.",
@@ -70,6 +70,8 @@ public class ExperimenteBO {
                     + "chuva forte perto da sua casa.", MENU, Efeito.NENHUM, c.pendente());
             case CONSULTA -> new Resposta("Nesta simulação você ainda não tem consulta marcada. Use o botão \"Simular: abriu uma vaga\" "
                     + "para ver como o Zelo te avisa.", MENU, Efeito.NENHUM, c.pendente());
+            case PEDIR_VAGA -> new Resposta("Para ver como eu aviso, toque em \"Simular: abriu uma vaga\". Na vida real, a vaga chega quando alguém desmarca.",
+                    MENU, Efeito.NENHUM, c.pendente());
             case AFIRMATIVA, NEGATIVA, CANCELAR -> new Resposta("Agora não tem nada esperando a sua resposta. Quando abrir uma vaga, eu te aviso.",
                     MENU, Efeito.NENHUM, c.pendente());
             default -> new Resposta("Eu entendo frases simples, como \"quero a vaga\", \"não posso\", \"minha consulta\" ou \"tô seguro\". "

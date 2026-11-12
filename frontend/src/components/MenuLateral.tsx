@@ -84,7 +84,8 @@ export function MenuLateral({ children, aPartirDeLg = false, semMenuInferior = f
         </nav>
       </aside>
 
-      <div className={`${recuo} ${semMenuInferior ? '' : 'pb-[4.5rem] md:pb-0'} transition-[padding] duration-200`}>{children}</div>
+      {/* coluna da altura da tela: o rodape fica sempre no fim, mesmo em pagina curta */}
+      <div className={`flex min-h-dvh flex-col ${recuo} ${semMenuInferior ? '' : 'pb-[4.5rem] md:pb-0'} transition-[padding] duration-200`}>{children}</div>
 
       {!semMenuInferior && (
         // celular: menu inferior fixo — sempre visivel e ao alcance do polegar (ver docs/decisoes.md)

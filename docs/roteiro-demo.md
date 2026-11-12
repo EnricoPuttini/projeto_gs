@@ -16,7 +16,7 @@ Tudo sai da tela **/demo**: roteiro numerado à esquerda (cada passo diz o que o
 |---|---|---|
 | 0–5 s | Fala: "Consultas ficam vazias por falta, enquanto outras pessoas esperam meses." | Painel da UBS com agenda e fila |
 | 5–12 s | Clique em **1 · Paciente cancela a consulta** | Surge o cartão da vaga no celular da Dona Cida com contagem de 15 min; o painel mostra a oferta em andamento |
-| 12–20 s | Dona Cida **fala**: "quero a vaga" | Confirmação em voz alta; a consulta de encaixe entra na agenda; **Vagas recuperadas** vira 1 |
+| 12–20 s | Dona Cida **fala**: "quero a vaga" (ou toca no botão do cartão) | Confirmação em voz alta; a consulta de encaixe entra na agenda; **Vagas recuperadas** vira 1 |
 | 20–27 s | Clique em **3 · Simular alerta de enchente** | No cartão do passo a chuva prevista sobe até passar o limite da área (barra fica laranja), a área do córrego pulsa no mini mapa e o celular toca a sirene em tela cheia com o abrigo a 465 m. Dona Cida diz "tô seguro" (ou toca o botão): a confirmação viaja até o painel |
 | 27–30 s | Aponte os cartões de impacto | Vagas recuperadas, dias economizados e moradores alertados |
 
@@ -39,6 +39,10 @@ Se a banca quiser testar, abra **/experimente** (link "Teste com o seu endereço
 3. **Simular: chuva forte na sua rua**: alerta em tela cheia com a rota a pé até a escola. Diga "tô seguro".
 
 Nada disso grava no banco: é seguro deixar ligado mesmo com `ZELO_DEMO_MODE=false`.
+
+## Ambiente de teste: sempre tem vaga
+
+No celular da Dona Cida dá para repetir à vontade, por voz ou pelos botões: **"Quero uma vaga"** → **"Quero a vaga"** → **"Ver minha consulta"** → **"Cancelar consulta"** → "Quero uma vaga" de novo. Cada pedido abre uma vaga nova pelos caminhos reais (alguém desmarca, a vaga desce pela fila até ela) e o contador "Vagas recuperadas" do painel sobe.
 
 ## Se algo falhar ao vivo
 
