@@ -30,6 +30,16 @@ Tudo sai da tela **/demo**: roteiro numerado à esquerda (cada passo diz o que o
 6. **Acessibilidade**: ative *Letra grande*, use só o teclado (foco visível) e ouça a resposta com o botão "Ouvir".
 7. **Código**: Swagger (`/swagger-ui.html`), camadas `model → dao → bo → controller` e o teste de concorrência do encaixe.
 
+## Bônus: "teste com o seu endereço" (/experimente)
+
+Se a banca quiser testar, abra **/experimente** (link "Teste com o seu endereço" no Início):
+
+1. Digite um endereço (ou use "Usar onde estou agora"): aparecem a **chuva prevista de verdade** para as próximas 3 h e a **UBS e a escola reais mais perto** (OpenStreetMap).
+2. Marque **"Tenho 60 anos ou mais"** e clique em **Simular: abriu uma vaga**: o celular **toca**. Atenda; o Zelo fala a oferta. Diga "sim" (ou toque **Sim, eu quero**): a consulta aparece marcada.
+3. **Simular: chuva forte na sua rua**: alerta em tela cheia com a rota a pé até a escola. Diga "tô seguro".
+
+Nada disso grava no banco: é seguro deixar ligado mesmo com `ZELO_DEMO_MODE=false`.
+
 ## Se algo falhar ao vivo
 
 | Sintoma | Solução rápida |
@@ -39,6 +49,7 @@ Tudo sai da tela **/demo**: roteiro numerado à esquerda (cada passo diz o que o
 | Microfone não funciona | Use os botões *Quero a vaga* / *Estou seguro* ou digite; o resultado é o mesmo |
 | Sem som no alarme | Clique na tela uma vez ou no botão *Tocar o som do alarme* |
 | Nenhum alerta de chuva | Já alertado nesta hora: **Resetar a simulação** (no passo 3) e simule de novo |
+| Em /experimente, "lugares não responderam" | O OpenStreetMap demorou; a simulação segue com nomes genéricos. Tente outro endereço ou repita em 1 minuto |
 | Painel não rola com a roda do mouse | Corrigido nesta versão; se acontecer, atualize a página (Ctrl+F5) |
 
 ## Por que cada botão é honesto

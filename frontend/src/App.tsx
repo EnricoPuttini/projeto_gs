@@ -8,6 +8,7 @@ const ComoFunciona = lazy(() => import('./pages/ComoFunciona'))
 const Cidadao = lazy(() => import('./pages/Cidadao'))
 const Ubs = lazy(() => import('./pages/Ubs'))
 const Demo = lazy(() => import('./pages/Demo'))
+const Experimente = lazy(() => import('./pages/Experimente'))
 
 /** Produto (cidadao, painel) troca de tela rapido (≤ 300 ms); apresentacao tem entrada mais calma. */
 const PRODUTO = ['/cidadao', '/ubs']
@@ -25,6 +26,7 @@ function Rotas() {
           <Route path="/cidadao" element={<Cidadao />} />
           <Route path="/ubs" element={<Ubs />} />
           <Route path="/demo" element={<Demo />} />
+          <Route path="/experimente" element={<Experimente />} />
           <Route path="*" element={<Navigate to="/" replace />} />
         </Routes>
       </Suspense>
