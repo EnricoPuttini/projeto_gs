@@ -55,6 +55,16 @@ class ExperimenteBOTest {
         assertThat(r.acoes()).extracting("rotulo").containsExactly("Sim, eu quero", "Não posso");
     }
 
+    @ParameterizedTest
+    @ValueSource(strings = {"não entendi", "pode repetir", "quem fala?", "sim ou não"})
+    void comOfertaDuvidaReexplicaSemEncerrar(String texto) {
+        Resposta r = bo.responder(texto, com(Pendente.OFERTA));
+
+        assertThat(r.efeito()).isEqualTo(Efeito.NENHUM);
+        assertThat(r.pendente()).isEqualTo(Pendente.OFERTA);
+        assertThat(r.resposta()).contains("explico de novo").contains("Clínica Geral");
+    }
+
     @Test
     void estouSeguroComAlertaFechaOAlerta() {
         Resposta r = bo.responder("tô seguro", com(Pendente.ALERTA));

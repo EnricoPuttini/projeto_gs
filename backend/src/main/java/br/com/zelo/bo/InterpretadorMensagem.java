@@ -23,7 +23,13 @@ public class InterpretadorMensagem {
     private static final List<String> RAIZES_CANCELAR = List.of("cancel", "desmarc");
     private static final Set<String> NEGACAO = Set.of("nao", "nunca", "jamais", "recuso", "negativo", "dispenso");
     private static final Set<String> AFIRMACAO = Set.of("sim", "quero", "aceito", "aceitar", "confirmo", "confirmar",
-            "claro", "ok", "okay", "topo", "bora", "beleza", "certo", "pode", "combinado", "uhum", "isso", "vou");
+            "claro", "ok", "okay", "topo", "bora", "beleza", "combinado", "uhum");
+    /** Aceite "fraco": so vale em resposta curta ("isso!", "pode marcar"), nunca no meio de uma frase ("isso e um teste"). */
+    private static final Set<String> AFIRMACAO_CURTA = Set.of("isso", "pode", "vou", "certo");
+    private static final int PALAVRAS_RESPOSTA_CURTA = 3;
+    /** Pessoa em duvida (muito comum ao telefone): nunca pode virar "sim" ou "nao" por acaso. Comparado na frase normalizada. */
+    private static final List<String> DUVIDA = List.of("nao entendi", "nao entendo", "nao sei", "nao ouvi", "como assim", "o que",
+            "que e isso", "quem e", "quem fala", "quem ta falando", "quem esta falando", "repet", "de novo", "fala mais", "hein", "qual");
     private static final Set<String> SEGURANCA = Set.of("seguro", "segura", "salvo", "salva");
     private static final Set<String> PERIGO = Set.of("perigo", "alagando", "alagou", "enchente", "inundando", "inundou");
     private static final Set<String> CONSULTA = Set.of("consulta", "consultas", "agenda", "horario", "quando", "medico");
@@ -46,10 +52,18 @@ public class InterpretadorMensagem {
         if (palavras.stream().anyMatch(p -> RAIZES_CANCELAR.stream().anyMatch(p::startsWith))) {
             return Intencao.CANCELAR;
         }
+        String frase = " " + String.join(" ", palavras) + " ";
+        boolean afirma = palavras.stream().anyMatch(AFIRMACAO::contains)
+                || frase.contains(" ta bom ") || frase.contains(" esta bom ")
+                || (palavras.size() <= PALAVRAS_RESPOSTA_CURTA && palavras.stream().anyMatch(AFIRMACAO_CURTA::contains));
+        // "sim ou nao?" e eco da propria pergunta (o microfone ouviu o Zelo): e duvida, nao resposta
+        if ((afirma && nega && palavras.contains("ou")) || DUVIDA.stream().anyMatch(d -> frase.contains(" " + d))) {
+            return Intencao.DUVIDA;
+        }
         if (nega) {
             return Intencao.NEGATIVA;
         }
-        if (palavras.stream().anyMatch(AFIRMACAO::contains)) {
+        if (afirma) {
             return Intencao.AFIRMATIVA;
         }
         if (palavras.stream().anyMatch(CONSULTA::contains)) {
