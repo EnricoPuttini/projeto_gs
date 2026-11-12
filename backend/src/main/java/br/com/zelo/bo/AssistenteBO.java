@@ -13,6 +13,7 @@ import br.com.zelo.model.Direcao;
 import br.com.zelo.model.Intencao;
 import br.com.zelo.model.OfertaStatus;
 import br.com.zelo.model.OfertaVaga;
+import br.com.zelo.model.Vaga;
 import br.com.zelo.model.Paciente;
 import org.springframework.stereotype.Service;
 
@@ -46,6 +47,15 @@ public class AssistenteBO {
     private final CanalMensageria canal;
     private final AlertaBO alertas;
     private final Clock clock;
+    // so existe no modo demo; buscado sob demanda (ObjectProvider) para nao criar dependencia circular
+    private org.springframework.beans.factory.ObjectProvider<DemoBO> demo;
+    private VagaBO vagas;
+
+    @org.springframework.beans.factory.annotation.Autowired
+    void usarDemo(org.springframework.beans.factory.ObjectProvider<DemoBO> demo, VagaBO vagas) {
+        this.demo = demo;
+        this.vagas = vagas;
+    }
 
     public AssistenteBO(InterpretadorMensagem interpretador, PacienteBO pacientes, OfertaBO ofertaBO, EncaixeBO encaixe,
                         ConsultaBO consultaBO, UbsBO ubs, ReferenciaBO referencia, MensagemBO mensagens,
@@ -83,6 +93,7 @@ public class AssistenteBO {
         Optional<OfertaVaga> oferta = ofertaBO.listarPorPaciente(p.id(), OfertaStatus.PENDENTE).stream().findFirst();
         return switch (intencao) {
             case AFIRMATIVA -> oferta.isPresent() ? aceitarOferta(p, oferta.get()) : confirmarConsulta(p);
+            case PEDIR_VAGA -> oferta.isPresent() ? aceitarOferta(p, oferta.get()) : pedirVaga(p);
             case NEGATIVA -> oferta.isPresent() ? recusarOferta(oferta.get()) : negarConsulta(p);
             case CANCELAR -> oferta.isPresent() ? recusarOferta(oferta.get()) : cancelarProxima(p);
             case SEGURO -> confirmarSeguranca(p);
@@ -97,7 +108,24 @@ public class AssistenteBO {
         return new Resposta("Pronto, %s! Sua consulta de %s está marcada: %s, na %s. Pode ir tranquila(o)."
                 .formatted(primeiroNome(p), referencia.buscarEspecialidade(c.especialidadeId()).nome(),
                         Formato.dataHora(c.dataHora()), ubs.buscar(c.ubsId()).nome()),
-                List.of(new Acao("Ver minha consulta", "minha consulta")));
+                List.of(new Acao("Ver minha consulta", "minha consulta"), new Acao("Cancelar consulta", "cancelar consulta")));
+    }
+
+    /**
+     * "Quero uma vaga" sem oferta aberta. Na vida real, a vaga nasce quando alguem desmarca: o Zelo explica a fila.
+     * No modo demo (ambiente de teste), a vaga e aberta na hora pelos caminhos reais (DemoBO.garantirVagaPara).
+     */
+    private Resposta pedirVaga(Paciente p) {
+        DemoBO demoBO = demo == null ? null : demo.getIfAvailable();
+        if (demoBO != null) {
+            OfertaVaga o = demoBO.garantirVagaPara(p.id());
+            Vaga v = vagas.buscar(o.vagaId());
+            return new Resposta("Achei uma vaga para você, %s! %s, %s. Você quer? Diga \"sim\" ou toque em \"Quero a vaga\"."
+                    .formatted(primeiroNome(p), referencia.buscarEspecialidade(v.especialidadeId()).nome(),
+                            Formato.dataHora(v.dataHora())), acoesOferta());
+        }
+        return new Resposta("Agora não tem vaga aberta. Quando alguém desmarcar, eu te aviso na hora e você responde aqui.",
+                menuPadrao());
     }
 
     private Resposta recusarOferta(OfertaVaga oferta) {
@@ -128,12 +156,12 @@ public class AssistenteBO {
     private Resposta cancelarProxima(Paciente p) {
         Optional<Consulta> alvo = proximaConsulta(p, CANCELAVEIS);
         if (alvo.isEmpty()) {
-            return new Resposta("Você não tem consulta marcada para cancelar.", List.of());
+            return new Resposta("Você não tem consulta marcada para cancelar.", menuPadrao());
         }
         Consulta c = consultaBO.cancelar(alvo.get().id());
         return new Resposta("Tudo bem, cancelei sua consulta de %s (%s). Obrigado por avisar: outra pessoa vai aproveitar a vaga."
                 .formatted(referencia.buscarEspecialidade(c.especialidadeId()).nome(), Formato.dataHora(c.dataHora())),
-                List.of());
+                menuPadrao());
     }
 
     private Resposta confirmarSeguranca(Paciente p) {
@@ -174,7 +202,7 @@ public class AssistenteBO {
         if (oferta.isPresent()) {
             return new Resposta(abertura + "Tem uma vaga de consulta esperando a sua resposta. Você quer?", acoesOferta());
         }
-        return new Resposta(abertura + "Eu posso mostrar a sua consulta ou cancelar se você não puder ir. O que você quer?",
+        return new Resposta(abertura + "Eu posso procurar uma vaga para você, mostrar a sua consulta ou cancelar se você não puder ir. O que você quer?",
                 menuPadrao());
     }
 
@@ -195,6 +223,7 @@ public class AssistenteBO {
     }
 
     private static List<Acao> menuPadrao() {
-        return List.of(new Acao("Minha consulta", "minha consulta"), new Acao("Cancelar consulta", "cancelar consulta"));
+        return List.of(new Acao("Quero uma vaga", "quero uma vaga"), new Acao("Minha consulta", "minha consulta"),
+                new Acao("Cancelar consulta", "cancelar consulta"));
     }
 }

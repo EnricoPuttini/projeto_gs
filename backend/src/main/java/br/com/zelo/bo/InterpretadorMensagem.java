@@ -30,6 +30,8 @@ public class InterpretadorMensagem {
     /** Pessoa em duvida (muito comum ao telefone): nunca pode virar "sim" ou "nao" por acaso. Comparado na frase normalizada. */
     private static final List<String> DUVIDA = List.of("nao entendi", "nao entendo", "nao sei", "nao ouvi", "como assim", "o que",
             "que e isso", "quem e", "quem fala", "quem ta falando", "quem esta falando", "repet", "de novo", "fala mais", "hein", "qual");
+    /** "quero vaga", "quero marcar", "tem vaga?": com oferta aberta e aceite; sem oferta, e pedido de vaga. */
+    private static final List<String> RAIZES_VAGA = List.of("vaga", "marca", "agend", "encaix");
     private static final Set<String> SEGURANCA = Set.of("seguro", "segura", "salvo", "salva");
     private static final Set<String> PERIGO = Set.of("perigo", "alagando", "alagou", "enchente", "inundando", "inundou");
     private static final Set<String> CONSULTA = Set.of("consulta", "consultas", "agenda", "horario", "quando", "medico");
@@ -62,6 +64,9 @@ public class InterpretadorMensagem {
         }
         if (nega) {
             return Intencao.NEGATIVA;
+        }
+        if (palavras.stream().anyMatch(p -> RAIZES_VAGA.stream().anyMatch(p::startsWith))) {
+            return Intencao.PEDIR_VAGA;
         }
         if (afirma) {
             return Intencao.AFIRMATIVA;
