@@ -13,10 +13,13 @@ export function AlertaTelaCheia({
   alerta,
   aoConfirmar,
   embutido = false,
+  confirmar = (id: number) => confirmarSeguro(id),
 }: {
   alerta: AlertaDetalhe
   aoConfirmar: () => void
   embutido?: boolean
+  /** como registrar o "estou seguro"; no modo Experimente nao ha banco, entao e so local */
+  confirmar?: (id: number) => Promise<unknown>
 }) {
   const { somBloqueado, ativarSom } = useAlarme(alerta.intensidade, true)
   const fala = useFala()
@@ -36,7 +39,7 @@ export function AlertaTelaCheia({
     setEnviando(true)
     setErro(null)
     try {
-      await confirmarSeguro(alerta.id)
+      await confirmar(alerta.id)
       avisarSeguro()
       fala.parar()
       aoConfirmar()

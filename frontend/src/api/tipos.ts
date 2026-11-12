@@ -147,3 +147,20 @@ export interface AlertaDetalhe {
   rotaUrl: string | null
   mensagem: string
 }
+
+// Modo Experimente (sem banco): o contexto da simulacao vai junto com cada mensagem
+export type PendenteTeste = 'NENHUM' | 'OFERTA' | 'ALERTA'
+export interface ContextoTeste {
+  pendente: PendenteTeste
+  nome: string
+  especialidade: string
+  unidade: string
+  quando: string
+  abrigo: string
+}
+export interface RespostaTeste {
+  resposta: string
+  acoes: Acao[]
+  efeito: 'NENHUM' | 'ACEITOU_VAGA' | 'RECUSOU_VAGA' | 'SEGURO' | 'PERIGO'
+  pendente: PendenteTeste
+}

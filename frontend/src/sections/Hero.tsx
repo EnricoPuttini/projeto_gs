@@ -99,7 +99,7 @@ export function Hero() {
                 {hero.ctaPrincipal} <IconeSeta className="size-5" />
               </Link>
             </Magnetic>
-            <Link to="/como-funciona" className="inline-flex min-h-14 items-center rounded-full text-lg font-bold text-tinta underline sm:px-5 decoration-ambar decoration-2 underline-offset-8 hover:decoration-4">
+            <Link to="/experimente" className="inline-flex min-h-14 items-center rounded-full text-lg font-bold text-tinta underline sm:px-5 decoration-ambar decoration-2 underline-offset-8 hover:decoration-4">
               {hero.ctaSecundario}
             </Link>
           </div>
