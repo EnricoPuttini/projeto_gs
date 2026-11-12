@@ -29,7 +29,7 @@ export function TopoCelular() {
  * barra de progresso da leitura, cursor e scroll com inercia. `setas` liga a navegacao por secoes.
  * `suave=false` nas telas de produto (ex.: /demo): o Lenis captura a roda do mouse dos paineis internos.
  */
-export function Apresentacao({ children, largo = false, suave = true, setas = false }: { children: ReactNode; largo?: boolean; suave?: boolean; setas?: boolean }) {
+export function Apresentacao({ children, largo = false, suave = true, setas = false, centralizar = false }: { children: ReactNode; largo?: boolean; suave?: boolean; setas?: boolean; centralizar?: boolean }) {
   const barra = useRef<HTMLDivElement>(null)
 
   useEffect(() => {
@@ -60,7 +60,8 @@ export function Apresentacao({ children, largo = false, suave = true, setas = fa
       </div>
       <MenuLateral>
         <TopoCelular />
-        <main id="conteudo">{children}</main>
+        {/* centralizar: telas de painel (ex.: /demo) ficam no meio da altura disponivel em telas grandes */}
+        <main id="conteudo" className={centralizar ? 'flex flex-1 flex-col justify-center' : 'flex-1'}>{children}</main>
         <footer className="bg-noite text-papel/80">
           <div className={`mx-auto flex flex-wrap items-center justify-between gap-3 px-4 py-6 text-sm ${largura}`}>
             <p>
