@@ -34,7 +34,7 @@ public class OpenMeteoClient {
     private final Clock clock;
     private final Map<String, Entrada> cache = new ConcurrentHashMap<>();
 
-    public OpenMeteoClient(RestClient openMeteoRestClient, Clock clock) {
+    public OpenMeteoClient(@org.springframework.beans.factory.annotation.Qualifier("openMeteoRestClient") RestClient openMeteoRestClient, Clock clock) {
         this.http = openMeteoRestClient;
         this.clock = clock;
     }

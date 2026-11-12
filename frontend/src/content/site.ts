@@ -27,7 +27,7 @@ export const SITE = {
     subtitulo:
       'O Zelo é um assistente por voz e texto que entrega a consulta desmarcada ao próximo da fila em minutos — e avisa quem mora em área de risco antes de a rua alagar.',
     ctaPrincipal: 'Ver a demonstração',
-    ctaSecundario: 'Como funciona',
+    ctaSecundario: 'Teste com o seu endereço',
     cartoes: ['Vaga aberta: amanhã, 8h', 'Alerta de chuva forte'],
     // Conversa que o celular do hero "digita" sozinho: textos e valores reais da demo (vaga das 8h do seed;
     // 465 m = distancia calculada pelo backend da casa da Dona Cida ate o abrigo).
