@@ -19,4 +19,16 @@ public class OpenMeteoConfig {
         fabrica.setReadTimeout(Duration.ofSeconds(4));
         return RestClient.builder().baseUrl(url).requestFactory(fabrica).build();
     }
+
+    /** Nominatim (OpenStreetMap): a politica de uso exige User-Agent que identifique a aplicacao. */
+    @Bean
+    public RestClient nominatimRestClient(@Value("${zelo.nominatim-url:https://nominatim.openstreetmap.org}") String url) {
+        SimpleClientHttpRequestFactory fabrica = new SimpleClientHttpRequestFactory();
+        fabrica.setConnectTimeout(Duration.ofSeconds(4));
+        fabrica.setReadTimeout(Duration.ofSeconds(8));
+        return RestClient.builder().baseUrl(url).requestFactory(fabrica)
+                .defaultHeader("User-Agent", "Zelo/1.0 (projeto academico FIAP Global Solution)")
+                .defaultHeader("Accept-Language", "pt-BR")
+                .build();
+    }
 }

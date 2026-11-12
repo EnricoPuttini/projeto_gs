@@ -27,3 +27,8 @@ Pedi um redesign cinematográfico nas páginas de apresentação e calmo no prod
 ## M5 — Melhorias pelo feedback de usuário real
 Pedi a correção do scroll do painel na /demo (causa: Lenis capturando a roda do mouse, coberta por teste Playwright), a simulação encadeada da enchente com "estou seguro" por voz, o app do cidadão dentro do celular no desktop, menu lateral recolhível, setas entre seções e um mapa Leaflet/OpenStreetMap em "Meus locais" com fallback em SVG.
 A IA implementou item a item verificando pela interface; corrigiu no caminho a área errada na simulação e nomes acessíveis que não continham o texto visível.
+
+
+## M6 — Experimente o Zelo (teste do visitante)
+Pedi um lugar de teste em que qualquer pessoa coloque onde mora e converse com o Zelo, simulando também a pessoa idosa que não abre o WhatsApp e precisa de alguém falando no aparelho para aceitar a vaga.
+A IA propôs e fez a página /experimente: endereço real (Nominatim), chuva real (Open-Meteo), UBS e escola reais mais perto (OpenStreetMap, via backend com cache e limite de uso), conversa sem estado com o mesmo interpretador de regras do assistente (sem IA generativa, explicando o porquê) e uma **ligação simulada** que toca, fala a oferta e entende "sim"/"não" por voz ou botões grandes. Testou o fluxo inteiro pela interface (puppeteer) e com axe em 15 estados (0 violações).

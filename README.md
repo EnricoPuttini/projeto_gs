@@ -117,6 +117,8 @@ Para Oracle da FIAP: rode `01_ddl.sql` e `02_dml.sql` no seu schema e aponte `DB
 | GET | `/api/v1/pacientes/{id}/alertas?ativos=true` | Alertas de enchente do morador |
 | POST | `/api/v1/alertas/{id}/seguro` | "Estou seguro" |
 | GET | `/api/v1/config` | Flag do modo demo |
+| POST | `/api/v1/experimente/conversa` | Conversa de teste do visitante (sem estado; o contexto vem do navegador, nada é gravado) |
+| GET | `/api/v1/experimente/previsao?lat=&lng=` · `/lugares?lat=&lng=` | Chuva real das próximas 3 h (Open-Meteo) e UBS/escola reais mais perto (OpenStreetMap/Nominatim, cache de 24 h, 1 consulta/s) |
 | POST | `/api/v1/demo/cancelar-consulta|chuva|avancar-relogio|resetar` | Modo demo (404 se `ZELO_DEMO_MODE` não for `true`) |
 
 O job de alertas consulta a [Open-Meteo](https://open-meteo.com) a cada 15 min; se a API cair, o sistema segue e só registra o erro.

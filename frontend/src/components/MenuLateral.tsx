@@ -1,11 +1,12 @@
 import type { ReactNode } from 'react'
 import { Link, NavLink } from 'react-router-dom'
 import { usePreferencia } from '../hooks/usePreferencia'
-import { IconeAlfinete, IconeCasa, IconeCelular, IconeInfo, IconePainel, IconePlay } from './Icones'
+import { IconeAlfinete, IconeCasa, IconeCelular, IconeInfo, IconeMic, IconePainel, IconePlay } from './Icones'
 import { LetraGrande } from './LetraGrande'
 
 const PAGINAS = [
   { para: '/', rotulo: 'Início', curto: 'Início', icone: IconeCasa },
+  { para: '/experimente', rotulo: 'Experimente', curto: 'Testar', icone: IconeMic },
   { para: '/como-funciona', rotulo: 'Como funciona', curto: 'Como', icone: IconeInfo },
   { para: '/demo', rotulo: 'Demonstração', curto: 'Demo', icone: IconePlay },
   { para: '/cidadao', rotulo: 'App do cidadão', curto: 'App', icone: IconeCelular },
@@ -88,7 +89,7 @@ export function MenuLateral({ children, aPartirDeLg = false, semMenuInferior = f
       {!semMenuInferior && (
         // celular: menu inferior fixo — sempre visivel e ao alcance do polegar (ver docs/decisoes.md)
         <nav aria-label="Principal (celular)" className="fixed inset-x-0 bottom-0 z-50 border-t border-white/10 bg-noite pb-[env(safe-area-inset-bottom)] md:hidden">
-          <ul className="grid grid-cols-5">
+          <ul className="grid grid-cols-6">
             {PAGINAS.map(({ para, rotulo, curto, icone: Icone }) => (
               <li key={para}>
                 <NavLink
